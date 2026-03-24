@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LoveLink - Kết Nối Trái Tim</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #0e0b14;
+  --bg2: #150f1e;
+  --bg3: #1c1528;
+  --card: #201830;
+  --border: #2e2045;
+  --rose: #ff4e7e;
+  --rose2: #ff8fa8;
+  --violet: #9b5de5;
+  --violet2: #c77dff;
+  --gold: #ffd166;
+  --teal: #06d6a0;
+  --text: #f0ecf8;
+  --text2: #9985bb;
+  --text3: #6a5585;
+  --online: #06d6a0;
+  --radius: 18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Quicksand',sans-serif;font-size:15px;position:relative}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 15% 25%,rgba(155,93,229,.12) 0,transparent 50%),
+  radial-gradient(ellipse at 85% 75%,rgba(255,78,126,.1) 0,transparent 50%),
+  radial-gradient(ellipse at 50% 50%,rgba(6,214,160,.04) 0,transparent 60%)}
+.screen{display:none;position:fixed;inset:0;z-index:1;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+.scroll-area::-webkit-scrollbar{display:none}
+.btn{padding:14px 20px;border:none;border-radius:14px;font-family:'Quicksand',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--rose),var(--violet));color:#fff;width:100%;box-shadow:0 4px 20px rgba(255,78,126,.35)}
+.btn-ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border);width:100%}
+.btn-teal{background:linear-gradient(135deg,var(--teal),#00b4d8);color:#0e0b14;width:100%;font-weight:800}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:10px}
+.btn-outline{background:rgba(255,78,126,.1);color:var(--rose);border:1.5px solid rgba(255,78,126,.3)}
+.inp{width:100%;padding:13px 16px;background:var(--card);border:1.5px solid var(--border);border-radius:13px;color:var(--text);font-family:'Quicksand',sans-serif;font-size:15px;font-weight:500;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--rose)}
+.inp::placeholder{color:var(--text3)}
+select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239985bb' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+select.inp option{background:#1c1528}
+.form-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:.5px}
+.form-group{margin-bottom:16px}
+.hdr{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);background:rgba(14,11,20,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;flex-shrink:0}
+.hdr-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;flex:1}
+.hdr-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--rose),var(--violet2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.icon-btn{width:40px;height:40px;background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;transition:all .2s}
+.icon-btn:active{transform:scale(.95)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(21,15,30,.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s}
+.nav-item .nav-icon{font-size:22px;transition:transform .2s}
+.nav-item.active .nav-icon{transform:scale(1.15)}
+.nav-label{font-size:10px;color:var(--text3);font-weight:700;letter-spacing:.3px}
+.nav-item.active .nav-label{color:var(--rose)}
+.nav-badge{position:absolute;top:-3px;right:-3px;background:var(--rose);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.nav-icon-wrap{position:relative;display:inline-block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-p{padding:16px}
+.avatar{border-radius:50%;object-fit:cover;background:linear-gradient(135deg,var(--violet),var(--rose));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:18px;flex-shrink:0;overflow:hidden}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 20px;font-size:14px;font-weight:600;z-index:999;transition:all .4s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;max-width:90vw;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.8);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:28px 28px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;animation:slideUp .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes swipeRight{to{transform:translateX(120%) rotate(15deg);opacity:0}}
+@keyframes swipeLeft{to{transform:translateX(-120%) rotate(-15deg);opacity:0}}
+.grad-text{background:linear-gradient(135deg,var(--rose),var(--violet2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(155,93,229,.12);color:var(--violet2);border:1px solid rgba(155,93,229,.2)}
+.chip-rose{background:rgba(255,78,126,.1);color:var(--rose2);border-color:rgba(255,78,126,.2)}
+.chip-teal{background:rgba(6,214,160,.1);color:var(--teal);border-color:rgba(6,214,160,.2)}
+.chip-gold{background:rgba(255,209,102,.1);color:var(--gold);border-color:rgba(255,209,102,.2)}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text3);font-size:13px;font-weight:600}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.section{margin-bottom:24px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:16px;font-weight:700}
+.section-link{font-size:13px;color:var(--rose);font-weight:600}
+.online-dot{width:10px;height:10px;border-radius:50%;background:var(--online);box-shadow:0 0 0 2px var(--bg2),0 0 8px var(--online);flex-shrink:0}
+/* SPLASH */
+#splash{align-items:center;justify-content:center;gap:0;background:var(--bg)}
+.splash-logo{text-align:center;animation:fadeIn .8s ease}
+.splash-icon{font-size:80px;margin-bottom:8px;display:block;animation:heartPop 1.5s ease infinite}
+.splash-title{font-family:'Playfair Display',serif;font-size:52px;font-weight:700;background:linear-gradient(135deg,var(--rose),var(--violet2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.splash-tagline{color:var(--text2);font-size:14px;margin-top:10px;letter-spacing:2px}
+.splash-btns{margin-top:50px;display:flex;flex-direction:column;gap:12px;width:300px}
+.splash-version{position:absolute;bottom:24px;color:var(--text3);font-size:12px}
+/* AUTH */
+#auth{background:var(--bg)}
+.auth-body{flex:1;overflow-y:auto;padding:20px;max-width:440px;margin:0 auto;width:100%}
+.tabs{display:flex;background:var(--bg3);border-radius:13px;padding:4px;margin-bottom:22px;gap:2px}
+.tab{flex:1;padding:11px;text-align:center;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .25s;color:var(--text3)}
+.tab.active{background:var(--card);color:var(--text);box-shadow:0 2px 12px rgba(0,0,0,.4)}
+/* SETUP */
+#setup{background:var(--bg)}
+.setup-body{flex:1;overflow-y:auto;padding:20px;max-width:440px;margin:0 auto;width:100%}
+.avatar-upload{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:24px}
+.av-preview{width:100px;height:100px;border-radius:50%;background:var(--card);border:3px solid var(--border);position:relative;cursor:pointer;overflow:hidden}
+.av-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.av-edit-badge{position:absolute;bottom:0;right:0;background:linear-gradient(135deg,var(--rose),var(--violet));width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid var(--bg)}
+.cover-upload{width:100%;height:120px;background:var(--card);border:2px dashed var(--border);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;position:relative;overflow:hidden;margin-bottom:20px}
+.cover-upload img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(14,11,20,.6)}
+.interest-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.interest-chip{padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
+.interest-chip.selected{background:rgba(255,78,126,.12);border-color:var(--rose);color:var(--rose)}
+.step-dots{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.step-dot{width:8px;height:8px;border-radius:4px;background:var(--border);transition:all .3s}
+.step-dot.active{width:24px;background:linear-gradient(90deg,var(--rose),var(--violet))}
+/* HOME */
+#home{background:var(--bg)}
+.home-hdr{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(14,11,20,.9);backdrop-filter:blur(12px);flex-shrink:0}
+.home-greeting{font-size:13px;color:var(--text2)}
+.home-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+.home-actions{display:flex;gap:8px}
+.stories-row{display:flex;gap:12px;padding:16px;overflow-x:auto;flex-shrink:0}
+.stories-row::-webkit-scrollbar{display:none}
+.story-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0}
+.story-ring{width:62px;height:62px;border-radius:50%;padding:2.5px;background:linear-gradient(135deg,var(--rose),var(--violet2));position:relative}
+.story-ring.seen{background:var(--border)}
+.story-av{width:100%;height:100%;border-radius:50%;border:2.5px solid var(--bg);object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg3)}
+.story-name{font-size:11px;font-weight:600;color:var(--text2);text-align:center;max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.post-card{margin:0 16px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeIn .4s ease}
+.post-hdr{padding:14px 14px 10px;display:flex;align-items:center;gap:10px}
+.post-user-info{flex:1}
+.post-name{font-size:14px;font-weight:700}
+.post-meta{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.post-online{width:7px;height:7px;border-radius:50%;background:var(--online)}
+.post-body{padding:0 14px 10px;font-size:14px;line-height:1.6;color:var(--text)}
+.post-img{width:100%;max-height:320px;object-fit:cover;display:block}
+.post-actions{padding:10px 14px 14px;display:flex;align-items:center;gap:16px;border-top:1px solid rgba(46,32,69,.5)}
+.post-action{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text2);cursor:pointer;font-weight:600;transition:all .2s}
+.post-action:active{transform:scale(.92)}
+.post-action.liked{color:var(--rose)}
+.post-action-icon{font-size:17px}
+.post-spacer{flex:1}
+.new-post-btn{position:fixed;bottom:80px;right:20px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--violet));border:none;font-size:24px;color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(255,78,126,.45);display:flex;align-items:center;justify-content:center;z-index:60;transition:all .2s}
+/* DISCOVER */
+#discover{background:var(--bg)}
+.discover-hdr{padding:14px 16px;flex-shrink:0}
+.filter-chip{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;background:var(--card);border:1.5px solid var(--border);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.filter-chip.active{background:rgba(255,78,126,.12);border-color:var(--rose);color:var(--rose)}
+.swipe-container{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:0 16px;overflow:hidden}
+.swipe-card{position:absolute;width:calc(100% - 32px);max-width:340px;border-radius:24px;overflow:hidden;cursor:grab;transition:transform .1s;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.swipe-card:active{cursor:grabbing}
+.swipe-card-img{width:100%;height:420px;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--bg3)}
+.swipe-card-info{position:absolute;bottom:0;left:0;right:0;padding:20px 20px 24px;background:linear-gradient(to top,rgba(0,0,0,.95) 0,rgba(0,0,0,.6) 60%,transparent 100%)}
+.swipe-card-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:4px}
+.swipe-card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.swipe-tag{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(255,255,255,.15);color:#fff;backdrop-filter:blur(4px)}
+.swipe-indicator{position:absolute;top:20px;font-size:36px;font-weight:800;border-radius:10px;padding:4px 12px;opacity:0;transition:opacity .2s;pointer-events:none}
+.swipe-indicator.like{right:20px;color:#4cd964;border:3px solid #4cd964;background:rgba(76,217,100,.15)}
+.swipe-indicator.nope{left:20px;color:var(--rose);border:3px solid var(--rose);background:rgba(255,78,126,.15)}
+.swipe-btns{display:flex;align-items:center;justify-content:center;gap:16px;padding:16px;flex-shrink:0}
+.swipe-btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.swipe-btn:active{transform:scale(.9)}
+.swipe-btn-nope{background:#1c1528;border:2px solid rgba(255,78,126,.4);color:var(--rose)}
+.swipe-btn-like{background:linear-gradient(135deg,var(--rose),var(--violet));color:#fff;width:66px;height:66px;font-size:26px;box-shadow:0 6px 24px rgba(255,78,126,.45)}
+.swipe-btn-star{background:#1c1528;border:2px solid rgba(255,209,102,.4);color:var(--gold)}
+.swipe-mode-tabs{display:flex;gap:8px;padding:14px 16px 0}
+.swipe-mode-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
+.swipe-mode-btn.active{border-color:var(--rose);color:var(--rose);background:rgba(255,78,126,.08)}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
+.match-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s}
+.match-card:active{transform:scale(.97)}
+.match-img{width:100%;height:160px;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:50px;background:var(--bg3)}
+.match-img img{width:100%;height:100%;object-fit:cover}
+.match-body{padding:10px}
+.match-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.match-sub{font-size:12px;color:var(--text3)}
+/* MESSAGES */
+#messages{background:var(--bg)}
+.chat-list{padding:12px 16px}
+.chat-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(46,32,69,.5);cursor:pointer;transition:all .2s}
+.chat-item:active{transform:scale(.98)}
+.chat-av-wrap{position:relative}
+.chat-body{flex:1;overflow:hidden}
+.chat-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.chat-preview{font-size:13px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-time{font-size:11px;color:var(--text3);text-align:right;flex-shrink:0}
+.chat-unread{width:20px;height:20px;border-radius:10px;background:linear-gradient(135deg,var(--rose),var(--violet));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;margin-top:4px}
+/* CHAT ROOM */
+#chat-room{background:var(--bg)}
+.chat-room-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);background:rgba(14,11,20,.9);backdrop-filter:blur(12px)}
+.chat-room-info{flex:1}
+.chat-room-name{font-size:16px;font-weight:700}
+.chat-room-status{font-size:12px;color:var(--teal)}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chat-messages::-webkit-scrollbar{display:none}
+.msg-bubble{max-width:75%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word}
+.msg-me{background:linear-gradient(135deg,var(--rose),var(--violet));color:#fff;align-self:flex-end;border-radius:18px 18px 4px 18px}
+.msg-them{background:var(--card);color:var(--text);align-self:flex-start;border-radius:18px 18px 18px 4px;border:1px solid var(--border)}
+.msg-time{font-size:10px;margin-top:4px}
+.msg-time-me{color:rgba(255,255,255,.6);text-align:right}
+.msg-time-them{color:var(--text3)}
+.msg-img-bubble{max-width:200px;border-radius:14px;overflow:hidden;cursor:pointer}
+.msg-img-bubble img{width:100%;display:block}
+.chat-input-row{padding:10px 12px 10px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);background:rgba(14,11,20,.9);backdrop-filter:blur(12px);flex-shrink:0}
+.chat-input{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:24px;padding:10px 16px;color:var(--text);font-family:'Quicksand',sans-serif;font-size:14px;outline:none;transition:border-color .2s;resize:none;max-height:100px}
+.chat-input:focus{border-color:var(--rose)}
+.chat-send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--violet));border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.chat-send-btn:active{transform:scale(.9)}
+.chat-attach-btn{width:38px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
+/* PROFILE */
+#profile{background:var(--bg)}
+.profile-cover{width:100%;height:180px;object-fit:cover;display:block;background:linear-gradient(135deg,var(--bg3),var(--card));position:relative;overflow:hidden;flex-shrink:0}
+.profile-cover img{width:100%;height:100%;object-fit:cover}
+.cover-edit-btn{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px)}
+.profile-av-area{display:flex;align-items:flex-end;gap:12px;padding:0 16px;margin-top:-42px;margin-bottom:12px;position:relative;z-index:2}
+.profile-av{width:84px;height:84px;border-radius:50%;border:3px solid var(--bg);background:var(--card);position:relative;cursor:pointer;flex-shrink:0;overflow:hidden}
+.profile-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.profile-av-edit{position:absolute;bottom:0;right:0;background:linear-gradient(135deg,var(--rose),var(--violet));width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid var(--bg)}
+.profile-meta{flex:1;padding-bottom:6px}
+.profile-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.profile-handle{font-size:13px;color:var(--text2)}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px;margin-bottom:16px}
+.p-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.p-stat-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--rose)}
+.p-stat-lbl{font-size:11px;color:var(--text2);margin-top:2px}
+.profile-bio{padding:0 16px;margin-bottom:16px;font-size:14px;line-height:1.7;color:var(--text2)}
+.profile-section{padding:0 16px;margin-bottom:16px}
+.profile-interest-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.profile-grid-img{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--bg3)}
+.profile-grid-img img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-grid-add{background:var(--card);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--text3);cursor:pointer}
+#edit-profile{background:var(--bg)}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(46,32,69,.5)}
+.notif-item.unread{background:rgba(155,93,229,.04)}
+.notif-body{flex:1}
+.notif-text{font-size:14px;line-height:1.5}
+.notif-time{font-size:12px;color:var(--text3);margin-top:4px}
+.notif-icon{font-size:20px;width:36px;text-align:center;flex-shrink:0}
+.mode-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+.mode-nearby{background:rgba(6,214,160,.12);color:var(--teal);border:1px solid rgba(6,214,160,.25)}
+.mode-local{background:rgba(155,93,229,.12);color:var(--violet2);border:1px solid rgba(155,93,229,.25)}
+.mode-random{background:rgba(255,209,102,.12);color:var(--gold);border:1px solid rgba(255,209,102,.25)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center;gap:12px}
+.empty-icon{font-size:64px}
+.empty-title{font-size:18px;font-weight:700}
+.empty-sub{font-size:14px;color:var(--text2);line-height:1.6}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--rose);border-radius:50%;animation:spin .8s linear infinite}
+#profile-view{background:var(--bg);z-index:60}
+.pv-cover{width:100%;height:220px;position:relative;flex-shrink:0;overflow:hidden;background:var(--bg3)}
+.pv-cover img{width:100%;height:100%;object-fit:cover}
+.pv-av-row{display:flex;align-items:flex-end;gap:12px;padding:0 16px;margin-top:-48px;margin-bottom:14px;position:relative;z-index:2}
+.pv-av{width:96px;height:96px;border-radius:50%;border:3px solid var(--bg);overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:38px}
+.pv-av img{width:100%;height:100%;object-fit:cover}
+.pv-actions{display:flex;gap:8px;flex:1;justify-content:flex-end;padding-bottom:8px}
+.pv-action-btn{padding:9px 20px;border-radius:24px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+.pv-like-btn{background:linear-gradient(135deg,var(--rose),var(--violet));color:#fff}
+.pv-msg-btn{background:var(--card);border:1.5px solid var(--border);color:var(--text)}
+.match-popup{text-align:center;padding:10px 0}
+.match-popup-avatars{display:flex;align-items:center;justify-content:center;gap:-10px;margin-bottom:16px}
+.match-popup-av{width:80px;height:80px;border-radius:50%;border:3px solid var(--rose);overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:32px}
+.match-heart{font-size:32px;position:relative;z-index:1;margin:0 -5px}
+.match-popup-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--rose),var(--violet2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.match-popup-sub{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.filter-panel{background:var(--bg2);border-radius:20px 20px 0 0;padding:20px;border:1px solid var(--border)}
+.range-slider{width:100%;-webkit-appearance:none;height:4px;background:linear-gradient(to right,var(--rose) 0%,var(--rose) 50%,var(--border) 50%,var(--border) 100%);border-radius:2px;outline:none;margin-top:8px}
+.range-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(255,78,126,.5);cursor:pointer;border:3px solid var(--rose)}
+/* UPLOAD PROGRESS */
+.upload-progress{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.7);align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(8px)}
+.upload-progress.show{display:flex}
+.upload-progress-text{color:#fff;font-weight:700;font-size:16px}
+/* TYPING INDICATOR */
+.typing-dots{display:flex;gap:4px;padding:10px 14px;background:var(--card);border-radius:18px 18px 18px 4px;align-self:flex-start;border:1px solid var(--border)}
+.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);animation:typingBounce .8s ease infinite}
+.typing-dot:nth-child(2){animation-delay:.15s}
+.typing-dot:nth-child(3){animation-delay:.3s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+/* MSG STATUS */
+.msg-status{font-size:10px;color:rgba(255,255,255,.5);margin-left:4px}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" class="screen active">
+  <div class="splash-logo">
+    <span class="splash-icon">💝</span>
+    <div class="splash-title">LoveLink</div>
+    <div class="splash-tagline">✦ KẾT NỐI TRÁI TIM ✦</div>
+  </div>
+  <div class="splash-btns">
+    <button class="btn btn-primary" onclick="showScreen('auth','login')">🌹 Đăng nhập</button>
+    <button class="btn btn-ghost" onclick="showScreen('auth','register')">✨ Tạo tài khoản mới</button>
+  </div>
+  <div class="splash-version">LoveLink v2.0 • Powered by Supabase 💕</div>
+</div>
+
+<!-- AUTH -->
+<div id="auth" class="screen">
+  <div class="hdr">
+    <div class="icon-btn" onclick="showScreen('splash')">←</div>
+    <div class="hdr-logo">💝 LoveLink</div>
+  </div>
+  <div class="auth-body">
+    <div class="tabs">
+      <div class="tab active" id="tab-login" onclick="switchAuthTab('login')">Đăng nhập</div>
+      <div class="tab" id="tab-register" onclick="switchAuthTab('register')">Đăng ký</div>
+    </div>
+    <div id="auth-login">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="inp" type="email" id="login-email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mật khẩu</label>
+        <input class="inp" type="password" id="login-pw" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()" style="margin-top:8px">🌸 Đăng nhập</button>
+    </div>
+    <div id="auth-register" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Tên hiển thị</label>
+        <input class="inp" type="text" id="reg-name" placeholder="Tên của bạn">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="inp" type="email" id="reg-email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mật khẩu</label>
+        <input class="inp" type="password" id="reg-pw" placeholder="Ít nhất 6 ký tự">
+      </div>
+      <button class="btn btn-primary" onclick="doRegister()" style="margin-top:8px">✨ Tạo tài khoản</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP PROFILE -->
+<div id="setup" class="screen">
+  <div class="hdr"><div class="hdr-logo">💝 Thiết lập hồ sơ</div></div>
+  <div class="setup-body">
+    <div class="step-dots" id="step-dots"></div>
+    <div id="setup-step-1">
+      <div class="avatar-upload">
+        <div class="av-preview" onclick="triggerAvatarUpload()">
+          <img id="setup-av-img" src="" style="display:none">
+          <div id="setup-av-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px">🙂</div>
+          <div class="av-edit-badge">📷</div>
+        </div>
+        <div style="font-size:14px;color:var(--text2);font-weight:600">Ảnh đại diện</div>
+      </div>
+      <div class="form-label">Ảnh bìa</div>
+      <div class="cover-upload" id="cover-upload-area" onclick="triggerCoverUpload()">
+        <img id="setup-cover-img" src="" style="display:none">
+        <div class="cover-overlay" id="cover-overlay">
+          <span style="font-size:28px">🌄</span>
+          <span style="font-size:13px;color:var(--text2);font-weight:600">Tải ảnh bìa lên</span>
+        </div>
+      </div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+      <input type="file" id="cover-file-input" accept="image/*" style="display:none" onchange="handleCoverUpload(this)">
+      <button class="btn btn-primary" onclick="nextSetupStep()">Tiếp theo →</button>
+    </div>
+    <div id="setup-step-2" style="display:none">
+      <div class="form-group"><label class="form-label">Ngày sinh</label><input class="inp" type="date" id="setup-dob"></div>
+      <div class="form-group">
+        <label class="form-label">Giới tính</label>
+        <select class="inp" id="setup-gender">
+          <option value="">Chọn giới tính</option>
+          <option value="male">Nam 👨</option>
+          <option value="female">Nữ 👩</option>
+          <option value="other">Khác 🌈</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Chiều cao (cm)</label><input class="inp" type="number" id="setup-height" placeholder="170" min="140" max="220"></div>
+      <div class="form-group">
+        <label class="form-label">Tỉnh / Thành phố</label>
+        <select class="inp" id="setup-city">
+          <option value="">Chọn địa phương</option>
+          <option>TP. Hồ Chí Minh</option><option>Hà Nội</option><option>Đà Nẵng</option>
+          <option>Cần Thơ</option><option>Hải Phòng</option><option>Biên Hòa</option>
+          <option>Nha Trang</option><option>Huế</option><option>Vũng Tàu</option><option>Đà Lạt</option><option>Khác</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Tiểu sử ngắn</label><textarea class="inp" id="setup-bio" placeholder="Giới thiệu về bản thân..." rows="3" style="resize:none"></textarea></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="prevSetupStep()">← Quay lại</button>
+        <button class="btn btn-primary" style="flex:2" onclick="nextSetupStep()">Tiếp theo →</button>
+      </div>
+    </div>
+    <div id="setup-step-3" style="display:none">
+      <div class="form-label" style="font-size:14px;margin-bottom:6px">Sở thích của bạn</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Chọn tối thiểu 3 sở thích</div>
+      <div class="interest-grid" id="interest-grid"></div>
+      <div style="display:flex;gap:10px;margin-top:24px">
+        <button class="btn btn-ghost" style="flex:1" onclick="prevSetupStep()">← Quay lại</button>
+        <button class="btn btn-primary" style="flex:2" onclick="finishSetup()">🌸 Hoàn tất</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOME / FEED -->
+<div id="home" class="screen">
+  <div class="home-hdr">
+    <div class="hdr-user" style="display:flex;align-items:center;gap:10px">
+      <div class="avatar" id="home-av" style="width:40px;height:40px;cursor:pointer" onclick="showTab('profile')">
+        <img id="home-av-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        <span id="home-av-letter">🙂</span>
+      </div>
+      <div>
+        <div class="home-greeting" id="home-greeting">Chào bạn ☀️</div>
+        <div class="home-name" id="home-name">Bạn ơi</div>
+      </div>
+    </div>
+    <div class="home-actions">
+      <div class="icon-btn" style="position:relative" onclick="showNotifications()">🔔
+        <span id="notif-badge" style="position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--rose);display:none"></span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-area" id="feed-scroll">
+    <div class="stories-row" id="stories-row"></div>
+    <div id="feed-posts"></div>
+    <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">✨ Bạn đã xem hết bài viết hôm nay</div>
+  </div>
+  <button class="new-post-btn" onclick="showNewPostModal()">✏️</button>
+  <div id="bottom-nav-home" class="bottom-nav"></div>
+</div>
+
+<!-- DISCOVER -->
+<div id="discover" class="screen">
+  <div class="discover-hdr">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Khám phá 💕</div>
+      <div class="icon-btn" onclick="showFilterModal()">⚙️</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <div class="mode-badge mode-nearby" onclick="setDiscoverMode('nearby')">📍 Quanh đây</div>
+      <div class="mode-badge mode-local" onclick="setDiscoverMode('local')">🏙️ Địa phương</div>
+      <div class="mode-badge mode-random" onclick="setDiscoverMode('random')">🎲 Ngẫu nhiên</div>
+    </div>
+  </div>
+  <div class="swipe-mode-tabs">
+    <div class="swipe-mode-btn active" id="view-swipe" onclick="setViewMode('swipe')">💘 Ghép đôi</div>
+    <div class="swipe-mode-btn" id="view-browse" onclick="setViewMode('browse')">👥 Duyệt</div>
+  </div>
+  <div id="swipe-view" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div class="swipe-container" id="swipe-container"></div>
+    <div class="swipe-btns">
+      <button class="swipe-btn swipe-btn-nope" onclick="swipeCard('left')">✕</button>
+      <button class="swipe-btn swipe-btn-like" onclick="swipeCard('like')">💖</button>
+      <button class="swipe-btn swipe-btn-star" onclick="swipeCard('super')">⭐</button>
+    </div>
+  </div>
+  <div id="browse-view" style="display:none;flex:1;overflow:hidden">
+    <div class="scroll-area"><div class="match-grid" id="browse-grid"></div></div>
+  </div>
+  <div id="bottom-nav-discover" class="bottom-nav"></div>
+</div>
+
+<!-- MESSAGES -->
+<div id="messages" class="screen">
+  <div class="hdr">
+    <div class="hdr-title">💬 Tin nhắn</div>
+  </div>
+  <div id="matches-strip" style="padding:12px 16px 0">
+    <div style="font-size:13px;color:var(--text2);font-weight:700;margin-bottom:10px">❤️ Ghép đôi mới</div>
+    <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:12px" id="matches-strip-list"></div>
+  </div>
+  <div style="height:1px;background:var(--border);margin:0 16px"></div>
+  <div class="scroll-area">
+    <div class="chat-list" id="chat-list"></div>
+  </div>
+  <div id="bottom-nav-messages" class="bottom-nav"></div>
+</div>
+
+<!-- CHAT ROOM -->
+<div id="chat-room" class="screen">
+  <div class="chat-room-hdr">
+    <div class="icon-btn" onclick="closeChatRoom()">←</div>
+    <div class="avatar" id="cr-avatar" style="width:40px;height:40px">
+      <img id="cr-av-img" src="" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover">
+      <span id="cr-av-icon">🙂</span>
+    </div>
+    <div class="chat-room-info">
+      <div class="chat-room-name" id="cr-name">Tên người dùng</div>
+      <div class="chat-room-status" id="cr-status">● Đang hoạt động</div>
+    </div>
+    <div class="icon-btn" onclick="showChatProfile()">👤</div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <label class="chat-attach-btn" for="chat-img-input">📷</label>
+    <input type="file" id="chat-img-input" accept="image/*" style="display:none" onchange="sendImageMessage(this)">
+    <textarea class="chat-input" id="chat-input" placeholder="Nhắn gì đó..." rows="1" onkeydown="chatKeydown(event)" oninput="autoResizeChat(this)"></textarea>
+    <button class="chat-send-btn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="screen">
+  <div class="scroll-area" style="padding-bottom:90px">
+    <div style="position:relative">
+      <div class="profile-cover" id="profile-cover-wrap">
+        <img id="profile-cover-img" src="" style="display:none">
+        <div id="profile-cover-placeholder" style="width:100%;height:100%;background:linear-gradient(135deg,#1c1528 0%,#201830 50%,#2e1f45 100%);display:flex;align-items:center;justify-content:center;font-size:48px">🌌</div>
+        <div class="cover-edit-btn" onclick="triggerCoverChange()">📷 Đổi ảnh bìa</div>
+      </div>
+    </div>
+    <div class="profile-av-area">
+      <div class="profile-av" onclick="triggerAvatarChange()">
+        <img id="profile-av-img" src="" style="display:none">
+        <div id="profile-av-placeholder" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:38px">🙂</div>
+        <div class="profile-av-edit">📷</div>
+      </div>
+      <div class="profile-meta">
+        <div class="profile-name" id="profile-name-text">Tên của bạn</div>
+        <div class="profile-handle" id="profile-handle-text">@username</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="showScreen('edit-profile')" style="align-self:flex-end;margin-bottom:6px">✏️ Sửa</button>
+    </div>
+    <div class="profile-stats">
+      <div class="p-stat"><div class="p-stat-val" id="p-stat-posts">0</div><div class="p-stat-lbl">Bài viết</div></div>
+      <div class="p-stat"><div class="p-stat-val" id="p-stat-likes">0</div><div class="p-stat-lbl">Thích</div></div>
+      <div class="p-stat"><div class="p-stat-val" id="p-stat-matches">0</div><div class="p-stat-lbl">Ghép đôi</div></div>
+    </div>
+    <div class="profile-bio" id="profile-bio-text">Thêm tiểu sử để mọi người biết thêm về bạn ✨</div>
+    <div class="profile-section">
+      <div class="section-hdr"><div class="section-title">📍 Thông tin</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px" id="profile-info-chips"></div>
+    </div>
+    <div class="profile-section">
+      <div class="section-hdr"><div class="section-title">🎯 Sở thích</div></div>
+      <div class="profile-interest-wrap" id="profile-interests"></div>
+    </div>
+    <div class="profile-section">
+      <div class="section-hdr">
+        <div class="section-title">📸 Ảnh của tôi</div>
+        <div class="section-link" onclick="addPhoto()">+ Thêm</div>
+      </div>
+      <div class="profile-grid" id="profile-photo-grid"></div>
+    </div>
+    <div style="padding:0 16px 10px">
+      <button class="btn btn-ghost" onclick="doLogout()" style="color:var(--rose);border-color:rgba(255,78,126,.3)">🚪 Đăng xuất</button>
+    </div>
+  </div>
+  <div id="bottom-nav-profile" class="bottom-nav"></div>
+  <input type="file" id="profile-avatar-input" accept="image/*" style="display:none" onchange="handleProfileAvatar(this)">
+  <input type="file" id="profile-cover-input" accept="image/*" style="display:none" onchange="handleProfileCover(this)">
+  <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="handleProfilePhoto(this)">
+</div>
+
+<!-- EDIT PROFILE -->
+<div id="edit-profile" class="screen">
+  <div class="hdr">
+    <div class="icon-btn" onclick="showScreen('profile')">←</div>
+    <div class="hdr-title">Chỉnh sửa hồ sơ</div>
+    <button class="btn btn-primary btn-sm" onclick="saveProfile()">Lưu</button>
+  </div>
+  <div class="scroll-area" style="padding:16px;padding-bottom:40px">
+    <div class="form-group"><label class="form-label">Tên hiển thị</label><input class="inp" id="edit-name" type="text"></div>
+    <div class="form-group"><label class="form-label">Tiểu sử</label><textarea class="inp" id="edit-bio" rows="4" style="resize:none"></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Giới tính</label>
+      <select class="inp" id="edit-gender">
+        <option value="male">Nam 👨</option><option value="female">Nữ 👩</option><option value="other">Khác 🌈</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Chiều cao (cm)</label><input class="inp" id="edit-height" type="number" min="140" max="220"></div>
+    <div class="form-group">
+      <label class="form-label">Tỉnh / Thành phố</label>
+      <select class="inp" id="edit-city">
+        <option>TP. Hồ Chí Minh</option><option>Hà Nội</option><option>Đà Nẵng</option>
+        <option>Cần Thơ</option><option>Hải Phòng</option><option>Biên Hòa</option>
+        <option>Nha Trang</option><option>Huế</option><option>Vũng Tàu</option><option>Đà Lạt</option><option>Khác</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tìm kiếm</label>
+      <select class="inp" id="edit-looking">
+        <option value="friend">Bạn bè</option><option value="date">Hẹn hò</option>
+        <option value="serious">Nghiêm túc</option><option value="any">Tất cả</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Sở thích</label><div class="interest-grid" id="edit-interest-grid"></div></div>
+  </div>
+</div>
+
+<!-- PROFILE VIEW (other user) -->
+<div id="profile-view" class="screen">
+  <div style="position:relative;flex-shrink:0">
+    <div class="pv-cover" id="pv-cover">
+      <img id="pv-cover-img" src="" style="display:none">
+      <div id="pv-cover-placeholder" style="width:100%;height:100%;background:linear-gradient(135deg,#1c1528,#2e1f45);display:flex;align-items:center;justify-content:center;font-size:60px">🌌</div>
+    </div>
+    <div class="icon-btn" onclick="closeProfileView()" style="position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);border-color:rgba(255,255,255,.1)">←</div>
+  </div>
+  <div class="scroll-area" style="padding-bottom:20px">
+    <div class="pv-av-row">
+      <div class="pv-av" id="pv-av"><img id="pv-av-img" src="" style="display:none"><span id="pv-av-icon">🙂</span></div>
+      <div class="pv-actions">
+        <button class="pv-action-btn pv-msg-btn" onclick="messageThisUser()">💬 Nhắn</button>
+        <button class="pv-action-btn pv-like-btn" onclick="likeThisUser()">💖 Thích</button>
+      </div>
+    </div>
+    <div style="padding:0 16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700" id="pv-name">Tên</div>
+        <div class="online-dot" id="pv-online-dot" style="display:none"></div>
+      </div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:14px" id="pv-sub"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px" id="pv-chips"></div>
+      <div style="font-size:14px;line-height:1.7;color:var(--text2);margin-bottom:16px" id="pv-bio"></div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🎯 Sở thích</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="pv-interests"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Filter Modal -->
+<div class="modal-overlay" id="filter-modal" onclick="if(event.target===this)closeModal('filter-modal')">
+  <div class="modal filter-panel">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔍 Bộ lọc tìm kiếm</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:14px;font-weight:700">Độ tuổi</div>
+      <div style="font-size:14px;color:var(--rose);font-weight:700" id="age-display">18 – 35</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <input type="range" class="range-slider" id="age-min" min="18" max="60" value="18" oninput="updateAgeFilter()">
+      <input type="range" class="range-slider" id="age-max" min="18" max="60" value="35" oninput="updateAgeFilter()">
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:8px">
+      <div style="font-size:14px;font-weight:700">Khoảng cách</div>
+      <div style="font-size:14px;color:var(--rose);font-weight:700" id="dist-display">50 km</div>
+    </div>
+    <input type="range" class="range-slider" id="dist-range" min="5" max="500" value="50" oninput="updateDistFilter()">
+    <div class="form-group" style="margin-top:16px">
+      <label class="form-label">Giới tính</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="interest-chip selected" onclick="toggleGenderFilter(this)">👩 Nữ</div>
+        <div class="interest-chip" onclick="toggleGenderFilter(this)">👨 Nam</div>
+        <div class="interest-chip" onclick="toggleGenderFilter(this)">🌈 Khác</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="applyFilter()">✅ Áp dụng</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="closeModal('filter-modal')">Đóng</button>
+  </div>
+</div>
+
+<!-- New Post Modal -->
+<div class="modal-overlay" id="new-post-modal" onclick="if(event.target===this)closeModal('new-post-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Tạo bài viết</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px">
+      <div class="avatar" id="new-post-av" style="width:38px;height:38px;flex-shrink:0">
+        <img id="new-post-av-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        <span id="new-post-av-icon">🙂</span>
+      </div>
+      <textarea class="inp" id="new-post-text" placeholder="Chia sẻ cảm nghĩ, tìm bạn... 💭" rows="4" style="resize:none;flex:1"></textarea>
+    </div>
+    <div id="new-post-img-preview" style="display:none;margin-bottom:12px">
+      <img id="new-post-img" style="width:100%;border-radius:12px;max-height:200px;object-fit:cover">
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <label class="chip chip-rose" style="cursor:pointer" for="post-img-input">📷 Thêm ảnh</label>
+      <input type="file" id="post-img-input" accept="image/*" style="display:none" onchange="handlePostImg(this)">
+    </div>
+    <button class="btn btn-primary" onclick="submitPost()">🚀 Đăng bài</button>
+  </div>
+</div>
+
+<!-- Match Modal -->
+<div class="modal-overlay" id="match-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="match-popup">
+      <div style="font-size:24px;margin-bottom:10px">🎉</div>
+      <div class="match-popup-avatars">
+        <div class="match-popup-av" id="match-my-av">🙂</div>
+        <div class="match-heart">💖</div>
+        <div class="match-popup-av" id="match-their-av">🙂</div>
+      </div>
+      <div class="match-popup-title">Ghép đôi thành công!</div>
+      <div class="match-popup-sub" id="match-name-sub">Bạn và <b>...</b> đã thích nhau!</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary" onclick="startMatchChat()">💬 Nhắn tin ngay</button>
+        <button class="btn btn-ghost" onclick="closeModal('match-modal')">Để sau</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications Modal -->
+<div class="modal-overlay" id="notif-modal" onclick="if(event.target===this)closeModal('notif-modal')">
+  <div class="modal" style="border-radius:28px 28px 0 0;padding:0;overflow:hidden;max-height:80vh;display:flex;flex-direction:column">
+    <div style="padding:20px 20px 14px;border-bottom:1px solid var(--border)">
+      <div class="modal-handle" style="margin-bottom:12px"></div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🔔 Thông báo</div>
+    </div>
+    <div style="overflow-y:auto;flex:1" id="notif-list"></div>
+  </div>
+</div>
+
+<!-- Upload Progress -->
+<div class="upload-progress" id="upload-progress">
+  <div class="spinner"></div>
+  <div class="upload-progress-text" id="upload-progress-text">Đang tải ảnh lên...</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// ============================================================
+const SUPA_URL = 'https://ciwswycojcqbqivixoei.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpd3N3eWNvamNxYnFpdml4b2VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNDcwODEsImV4cCI6MjA4OTgyMzA4MX0.Bbg4j7wkd3dyg9q0zjg-Y-fa8nPHvD7F1qu_rrrGrjA';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ============================================================
+// DATA & STATE
+// ============================================================
+const INTERESTS = ['☕ Cà phê','🍜 Ẩm thực','✈️ Du lịch','📚 Đọc sách','🎵 Âm nhạc','🎮 Gaming','🏃 Thể thao','🎨 Nghệ thuật','📷 Nhiếp ảnh','🍳 Nấu ăn','🐶 Thú cưng','🌿 Thiên nhiên','💪 Fitness','🎬 Phim ảnh','🧘 Yoga','💃 Nhảy múa','🚴 Đạp xe','🏖️ Biển','🎯 Cầu lông','🏊 Bơi lội','🛍️ Mua sắm','🎤 Karaoke','📱 Công nghệ','🍻 Gặp gỡ bạn bè'];
+const EMOJI_AVATARS = ['🙂','😊','🥰','😎','🤗','😄','🥳','😇','🌸','💫'];
+
+const SAMPLE_PROFILES = [
+  {id:'p1',name:'Ngọc Anh',age:23,city:'TP. Hồ Chí Minh',gender:'female',height:160,bio:'Thích đi café và chụp ảnh 📷☕',interests:['☕ Cà phê','📷 Nhiếp ảnh','✈️ Du lịch'],emoji:'🌸',dist:'1.2 km',online:true},
+  {id:'p2',name:'Minh Khoa',age:26,city:'Hà Nội',gender:'male',height:175,bio:'Lập trình viên thích guitar 🎸',interests:['🎵 Âm nhạc','💪 Fitness','📚 Đọc sách'],emoji:'😎',dist:'3.5 km',online:false},
+  {id:'p3',name:'Thu Hà',age:25,city:'Đà Nẵng',gender:'female',height:158,bio:'Yêu biển, yêu cà phê 🌊',interests:['🏖️ Biển','☕ Cà phê','🍜 Ẩm thực'],emoji:'😄',dist:'8 km',online:true},
+  {id:'p4',name:'Hoàng Nam',age:28,city:'TP. Hồ Chí Minh',gender:'male',height:178,bio:'Đầu bếp nghiệp dư 🍳',interests:['🍳 Nấu ăn','🍜 Ẩm thực','🍻 Gặp gỡ bạn bè'],emoji:'🤗',dist:'2.1 km',online:true},
+  {id:'p5',name:'Lan Phương',age:22,city:'Cần Thơ',gender:'female',height:155,bio:'Sinh viên thích du lịch bụi ✈️',interests:['✈️ Du lịch','📷 Nhiếp ảnh','🌿 Thiên nhiên'],emoji:'🥰',dist:'5 km',online:false},
+];
+
+let cu = null; // current user profile from DB
+let authUser = null; // supabase auth user
+let setupStep = 1;
+const totalSteps = 3;
+let setupAvatarFile = null;
+let setupCoverFile = null;
+let discoverMode = 'nearby';
+let viewMode = 'swipe';
+let swipeProfiles = [...SAMPLE_PROFILES];
+let currentSwipeIdx = 0;
+let currentChatUser = null;
+let lastMatchedUser = null;
+let chatSubscription = null;
+let chatMessages = [];
+let postImgFile = null;
+
+// ============================================================
+// SCREENS & NAVIGATION
+// ============================================================
+function showScreen(id, data) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='auth' && data) switchAuthTab(data);
+}
+
+const NAV_ITEMS = [
+  {id:'home',icon:'🏠',label:'Trang chủ'},
+  {id:'discover',icon:'💕',label:'Khám phá'},
+  {id:'messages',icon:'💬',label:'Tin nhắn'},
+  {id:'profile',icon:'👤',label:'Tôi'},
+];
+
+function buildNavs() {
+  ['home','discover','messages','profile'].forEach(screenId => {
+    const container = document.getElementById('bottom-nav-'+screenId);
+    if(!container) return;
+    container.innerHTML = NAV_ITEMS.map(item => `
+      <div class="nav-item ${item.id===screenId?'active':''}" onclick="showTab('${item.id}')">
+        <div class="nav-icon-wrap">
+          <span class="nav-icon">${item.icon}</span>
+          ${item.id==='messages'?'<span class="nav-badge" id="nav-msg-badge-'+screenId+'" style="display:none">!</span>':''}
+        </div>
+        <span class="nav-label">${item.label}</span>
+      </div>
+    `).join('');
+  });
+}
+
+function showTab(id) {
+  showScreen(id);
+  if(id==='discover') renderDiscover();
+  if(id==='messages') renderMessages();
+  if(id==='profile') renderProfile();
+  if(id==='home') renderFeed();
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function switchAuthTab(tab) {
+  document.getElementById('auth-login').style.display = tab==='login'?'':'none';
+  document.getElementById('auth-register').style.display = tab==='register'?'':'none';
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  if(!email||!pw){showToast('⚠️ Vui lòng điền đủ thông tin');return;}
+  showToast('⏳ Đang đăng nhập...');
+  const {data,error} = await sb.auth.signInWithPassword({email,password:pw});
+  if(error){showToast('❌ '+error.message);return;}
+  authUser = data.user;
+  await loadProfile();
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  if(!name||!email||!pw){showToast('⚠️ Vui lòng điền đủ thông tin');return;}
+  if(pw.length<6){showToast('⚠️ Mật khẩu cần ít nhất 6 ký tự');return;}
+  showToast('⏳ Đang tạo tài khoản...');
+  const {data,error} = await sb.auth.signUp({email,password:pw});
+  if(error){showToast('❌ '+error.message);return;}
+  authUser = data.user;
+  // Create profile row
+  cu = {id:authUser.id,name,emoji:EMOJI_AVATARS[Math.floor(Math.random()*EMOJI_AVATARS.length)]};
+  await sb.from('profiles').insert({id:authUser.id,name});
+  showToast('✅ Tạo tài khoản thành công!');
+  setupStep=1;
+  buildInterestGrid('interest-grid',[]);
+  renderSetupSteps();
+  setTimeout(()=>showScreen('setup'),800);
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  authUser=null; cu=null;
+  if(chatSubscription){chatSubscription.unsubscribe();chatSubscription=null;}
+  showScreen('splash');
+}
+
+async function loadProfile() {
+  if(!authUser) return;
+  const {data} = await sb.from('profiles').select('*').eq('id',authUser.id).single();
+  if(data){
+    cu = data;
+    afterLogin();
+  } else {
+    // New user, no profile yet
+    cu = {id:authUser.id,name:authUser.email.split('@')[0],emoji:'🙂'};
+    await sb.from('profiles').insert({id:authUser.id,name:cu.name});
+    setupStep=1;
+    buildInterestGrid('interest-grid',[]);
+    renderSetupSteps();
+    showScreen('setup');
+  }
+}
+
+function afterLogin() {
+  buildNavs();
+  updateHomeUI();
+  renderFeed();
+  if(!cu.gender || !cu.city) {
+    setupStep=1;
+    buildInterestGrid('interest-grid',cu.interests||[]);
+    renderSetupSteps();
+    showScreen('setup');
+  } else {
+    showTab('home');
+  }
+  setTimeout(()=>{document.getElementById('notif-badge').style.display='block';},3000);
+}
+
+// ============================================================
+// SETUP PROFILE
+// ============================================================
+function renderSetupSteps() {
+  const dots = document.getElementById('step-dots');
+  dots.innerHTML = Array.from({length:totalSteps},(_,i)=>`<div class="step-dot ${i+1===setupStep?'active':''}"></div>`).join('');
+  for(let i=1;i<=totalSteps;i++){
+    const el = document.getElementById('setup-step-'+i);
+    if(el) el.style.display = i===setupStep?'':'none';
+  }
+}
+
+function nextSetupStep(){if(setupStep<totalSteps){setupStep++;renderSetupSteps();}}
+function prevSetupStep(){if(setupStep>1){setupStep--;renderSetupSteps();}}
+
+function buildInterestGrid(containerId, selectedList) {
+  const grid = document.getElementById(containerId);
+  if(!grid) return;
+  grid.innerHTML = INTERESTS.map(int=>`
+    <div class="interest-chip ${selectedList.includes(int)?'selected':''}" onclick="toggleInterest(this,'${int}')">
+      ${int}
+    </div>
+  `).join('');
+}
+
+function toggleInterest(el, int) {
+  el.classList.toggle('selected');
+  if(!cu.interests) cu.interests=[];
+  if(el.classList.contains('selected')){
+    if(!cu.interests.includes(int)) cu.interests.push(int);
+  } else {
+    cu.interests = cu.interests.filter(i=>i!==int);
+  }
+}
+
+function triggerAvatarUpload(){document.getElementById('avatar-file-input').click();}
+function triggerCoverUpload(){document.getElementById('cover-file-input').click();}
+
+function handleAvatarUpload(input) {
+  const file = input.files[0]; if(!file) return;
+  setupAvatarFile = file;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('setup-av-img');
+  img.src=url; img.style.display='block';
+  document.getElementById('setup-av-placeholder').style.display='none';
+}
+
+function handleCoverUpload(input) {
+  const file = input.files[0]; if(!file) return;
+  setupCoverFile = file;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('setup-cover-img');
+  img.src=url; img.style.display='block';
+  document.getElementById('cover-overlay').style.opacity='0.4';
+}
+
+async function finishSetup() {
+  if(!cu.interests||cu.interests.length<3){showToast('⚠️ Chọn ít nhất 3 sở thích');return;}
+  cu.city = document.getElementById('setup-city').value || 'TP. Hồ Chí Minh';
+  cu.bio = document.getElementById('setup-bio').value || '';
+  cu.gender = document.getElementById('setup-gender').value || 'other';
+  cu.height = document.getElementById('setup-height').value || 165;
+  cu.dob = document.getElementById('setup-dob').value;
+
+  showUploadProgress('Đang lưu hồ sơ...');
+
+  // Upload avatar to Supabase Storage
+  if(setupAvatarFile) {
+    const path = `avatars/${authUser.id}_${Date.now()}`;
+    const {error} = await sb.storage.from('lovelink').upload(path, setupAvatarFile, {upsert:true});
+    if(!error){
+      const {data} = sb.storage.from('lovelink').getPublicUrl(path);
+      cu.avatar_url = data.publicUrl;
+    }
+  }
+  // Upload cover
+  if(setupCoverFile) {
+    const path = `covers/${authUser.id}_${Date.now()}`;
+    const {error} = await sb.storage.from('lovelink').upload(path, setupCoverFile, {upsert:true});
+    if(!error){
+      const {data} = sb.storage.from('lovelink').getPublicUrl(path);
+      cu.cover_url = data.publicUrl;
+    }
+  }
+
+  await sb.from('profiles').update({
+    name:cu.name, bio:cu.bio, gender:cu.gender, height:cu.height,
+    dob:cu.dob||null, city:cu.city, interests:cu.interests,
+    avatar_url:cu.avatar_url||null, cover_url:cu.cover_url||null,
+    looking:cu.looking||'any'
+  }).eq('id',cu.id);
+
+  hideUploadProgress();
+  buildNavs(); updateHomeUI(); renderFeed();
+  showToast('🎉 Hồ sơ đã được thiết lập!');
+  showTab('home');
+}
+
+// ============================================================
+// HOME / FEED
+// ============================================================
+function updateHomeUI() {
+  if(!cu) return;
+  const h = new Date().getHours();
+  const greet = h<12?'Chào buổi sáng ☀️':h<18?'Buổi chiều tốt lành 🌤️':'Buổi tối vui vẻ 🌙';
+  const greetEl=document.getElementById('home-greeting');
+  if(greetEl)greetEl.textContent=greet;
+  const nameEl=document.getElementById('home-name');
+  if(nameEl)nameEl.textContent=cu.name||'Bạn ơi';
+  const avImg=document.getElementById('home-av-img');
+  const avLetter=document.getElementById('home-av-letter');
+  if(cu.avatar_url&&avImg){avImg.src=cu.avatar_url;avImg.style.display='block';if(avLetter)avLetter.style.display='none';}
+  else if(avLetter){avLetter.textContent=cu.emoji||'🙂';}
+  const npAvImg=document.getElementById('new-post-av-img');
+  const npAvIcon=document.getElementById('new-post-av-icon');
+  if(cu.avatar_url&&npAvImg){npAvImg.src=cu.avatar_url;npAvImg.style.display='block';if(npAvIcon)npAvIcon.style.display='none';}
+  else if(npAvIcon)npAvIcon.textContent=cu.emoji||'🙂';
+}
+
+function renderStories() {
+  const row=document.getElementById('stories-row');
+  if(!row)return;
+  const stories=[
+    {name:'Của bạn',emoji:cu?cu.emoji:'🙂',av:cu?cu.avatar_url:'',isMe:true},
+    ...SAMPLE_PROFILES.slice(0,4).map(p=>({name:p.name,emoji:p.emoji,av:'',seen:Math.random()>.5}))
+  ];
+  row.innerHTML=stories.map(s=>`
+    <div class="story-item" onclick="${s.isMe?'showNewPostModal()':'showToast(\"📖 Story của \"+\"'+s.name+'\"')'}">
+      <div class="story-ring ${s.seen?'seen':''}">
+        <div class="story-av" style="position:relative">
+          ${s.av?`<img src="${s.av}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`<span>${s.emoji}</span>`}
+          ${s.isMe?`<span style="position:absolute;bottom:0;right:0;background:var(--rose);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg)">+</span>`:''}
+        </div>
+      </div>
+      <div class="story-name">${s.name.split(' ').pop()}</div>
+    </div>
+  `).join('');
+}
+
+async function renderFeed() {
+  if(!document.getElementById('feed-posts')) return;
+  renderStories();
+  // Load posts from Supabase
+  const {data:posts} = await sb.from('posts').select('*, profiles(name,avatar_url,city)').order('created_at',{ascending:false}).limit(20);
+  const allPosts = posts||[];
+  document.getElementById('feed-posts').innerHTML = allPosts.map(p=>renderPost(p)).join('') ||
+    `<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">Chưa có bài viết</div><div class="empty-sub">Hãy là người đầu tiên đăng bài!</div></div>`;
+}
+
+function renderPost(p) {
+  const user = p.profiles || {name:'Người dùng',avatar_url:'',city:'VN'};
+  const timeAgo = p.created_at ? getTimeAgo(p.created_at) : 'Vừa xong';
+  return `<div class="post-card" id="post-${p.id}">
+    <div class="post-hdr">
+      <div class="avatar" style="width:42px;height:42px">
+        ${user.avatar_url?`<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`<span style="font-size:22px">🙂</span>`}
+      </div>
+      <div class="post-user-info">
+        <div class="post-name">${user.name}</div>
+        <div class="post-meta"><span>${timeAgo}</span><span>•</span><span>📍 ${user.city||'VN'}</span></div>
+      </div>
+    </div>
+    ${p.content?`<div class="post-body">${p.content}</div>`:''}
+    ${p.image_url?`<img src="${p.image_url}" class="post-img">`:''}
+    <div class="post-actions">
+      <div class="post-action" onclick="toggleLike('${p.id}',this)">
+        <span class="post-action-icon">🤍</span> ${p.likes||0}
+      </div>
+      <div class="post-action" onclick="showToast('💬 Bình luận đang phát triển!')">
+        <span class="post-action-icon">💬</span> 0
+      </div>
+      <div class="post-spacer"></div>
+    </div>
+  </div>`;
+}
+
+async function toggleLike(postId, el) {
+  const icon = el.querySelector('.post-action-icon');
+  const isLiked = el.classList.toggle('liked');
+  icon.textContent = isLiked ? '❤️' : '🤍';
+  const countParts = el.textContent.trim().split(/\s+/);
+  const count = parseInt(countParts[countParts.length-1])||0;
+  el.innerHTML = `<span class="post-action-icon">${isLiked?'❤️':'🤍'}</span> ${isLiked?count+1:Math.max(0,count-1)}`;
+  if(postId.startsWith('p')) return; // sample post
+  await sb.from('posts').update({likes:isLiked?(count+1):Math.max(0,count-1)}).eq('id',postId);
+}
+
+function showNewPostModal() {
+  document.getElementById('new-post-modal').classList.add('show');
+  updateHomeUI();
+  postImgFile = null;
+  document.getElementById('new-post-img-preview').style.display='none';
+  document.getElementById('new-post-text').value='';
+}
+
+function handlePostImg(input) {
+  const file = input.files[0]; if(!file) return;
+  postImgFile = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById('new-post-img').src = url;
+  document.getElementById('new-post-img-preview').style.display='block';
+}
+
+async function submitPost() {
+  const text = document.getElementById('new-post-text').value.trim();
+  if(!text && !postImgFile){showToast('⚠️ Nhập nội dung hoặc thêm ảnh');return;}
+  if(!authUser){showToast('⚠️ Bạn cần đăng nhập');return;}
+
+  showUploadProgress('Đang đăng bài...');
+  let imageUrl = null;
+  if(postImgFile){
+    const path = `posts/${authUser.id}_${Date.now()}`;
+    const {error} = await sb.storage.from('lovelink').upload(path, postImgFile);
+    if(!error){
+      const {data} = sb.storage.from('lovelink').getPublicUrl(path);
+      imageUrl = data.publicUrl;
+    }
+  }
+  const {error} = await sb.from('posts').insert({
+    user_id:authUser.id, content:text, image_url:imageUrl
+  });
+  hideUploadProgress();
+  if(error){showToast('❌ Lỗi đăng bài: '+error.message);return;}
+  closeModal('new-post-modal');
+  renderFeed();
+  showToast('🚀 Đã đăng bài!');
+}
+
+// ============================================================
+// DISCOVER / SWIPE
+// ============================================================
+function renderDiscover() {
+  if(viewMode==='swipe') renderSwipeCards();
+  else renderBrowseGrid();
+}
+
+function setDiscoverMode(mode) { discoverMode=mode; renderDiscover(); }
+
+function setViewMode(mode) {
+  viewMode=mode;
+  document.getElementById('view-swipe').classList.toggle('active',mode==='swipe');
+  document.getElementById('view-browse').classList.toggle('active',mode==='browse');
+  document.getElementById('swipe-view').style.display=mode==='swipe'?'flex':'none';
+  document.getElementById('browse-view').style.display=mode==='browse'?'block':'none';
+  renderDiscover();
+}
+
+function renderSwipeCards() {
+  const container = document.getElementById('swipe-container');
+  if(currentSwipeIdx>=swipeProfiles.length){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon">💫</div><div class="empty-title">Hết rồi!</div><div class="empty-sub">Quay lại sau để xem thêm người mới nhé 🌸</div></div>`;
+    return;
+  }
+  const p = swipeProfiles[currentSwipeIdx];
+  container.innerHTML=`
+    <div class="swipe-card" id="swipe-card" ontouchstart="swipeTouchStart(event)" ontouchmove="swipeTouchMove(event)" ontouchend="swipeTouchEnd(event)">
+      <div class="swipe-card-img">
+        ${p.avatar_url?`<img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover">`:`<span>${p.emoji||'🙂'}</span>`}
+      </div>
+      <div class="swipe-indicator like" id="swipe-like">THÍCH</div>
+      <div class="swipe-indicator nope" id="swipe-nope">BỎ QUA</div>
+      <div class="swipe-card-info">
+        <div class="swipe-card-name">${p.name} <span style="font-size:20px;font-weight:600;opacity:.9">${p.age||''}</span></div>
+        <div style="font-size:13px;color:rgba(255,255,255,.6);margin-top:2px">📍 ${p.city||''} ${p.dist?'• '+p.dist:''}</div>
+        <div class="swipe-card-tags">
+          ${(p.interests||[]).slice(0,3).map(i=>`<div class="swipe-tag">${i}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  setupSwipeDrag();
+}
+
+function renderBrowseGrid() {
+  const grid = document.getElementById('browse-grid');
+  grid.innerHTML = swipeProfiles.map(p=>`
+    <div class="match-card" onclick='viewProfile(${JSON.stringify(p)})'>
+      <div class="match-img">
+        ${p.avatar_url?`<img src="${p.avatar_url}">`:`<span>${p.emoji||'🙂'}</span>`}
+      </div>
+      <div class="match-body">
+        <div class="match-name">${p.name}${p.age?', '+p.age:''}</div>
+        <div class="match-sub">📍 ${p.city||''}</div>
+        ${p.online?`<div style="font-size:12px;color:var(--teal);margin-top:4px">● Online</div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Touch swipe
+let touchStartX=0, touchStartY=0, isDragging=false;
+function swipeTouchStart(e){touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;isDragging=true;}
+function swipeTouchMove(e){
+  if(!isDragging)return;
+  const card=document.getElementById('swipe-card');
+  if(!card)return;
+  const dx=e.touches[0].clientX-touchStartX;
+  const dy=e.touches[0].clientY-touchStartY;
+  card.style.transform=`translateX(${dx}px) rotate(${dx*0.05}deg)`;
+  document.getElementById('swipe-like').style.opacity=dx>30?Math.min((dx-30)/50,1):0;
+  document.getElementById('swipe-nope').style.opacity=dx<-30?Math.min((-dx-30)/50,1):0;
+}
+function swipeTouchEnd(e){
+  if(!isDragging)return;isDragging=false;
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(dx>80)swipeCard('like');
+  else if(dx<-80)swipeCard('left');
+  else{const card=document.getElementById('swipe-card');if(card)card.style.transform='';}
+}
+
+function setupSwipeDrag(){
+  const card=document.getElementById('swipe-card');
+  if(!card)return;
+  let startX=0,startY=0,dragging=false;
+  card.addEventListener('mousedown',e=>{startX=e.clientX;startY=e.clientY;dragging=true;});
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const dx=e.clientX-startX;
+    card.style.transform=`translateX(${dx}px) rotate(${dx*0.05}deg)`;
+    document.getElementById('swipe-like').style.opacity=dx>30?Math.min((dx-30)/50,1):0;
+    document.getElementById('swipe-nope').style.opacity=dx<-30?Math.min((-dx-30)/50,1):0;
+  });
+  document.addEventListener('mouseup',e=>{
+    if(!dragging)return;dragging=false;
+    const dx=e.clientX-startX;
+    if(dx>80)swipeCard('like');
+    else if(dx<-80)swipeCard('left');
+    else{card.style.transform='';}
+  });
+}
+
+function swipeCard(dir) {
+  const card=document.getElementById('swipe-card');
+  if(!card)return;
+  const p=swipeProfiles[currentSwipeIdx];
+  if(dir==='like'||dir==='super'){
+    card.style.animation='swipeRight .4s forwards';
+    if(Math.random()>0.6){
+      lastMatchedUser=p;
+      setTimeout(()=>showMatchModal(p),500);
+    } else {
+      showToast(dir==='super'?'⭐ Super Like đã gửi!':'💖 Đã thích!');
+    }
+    if(authUser&&p.id&&!p.id.startsWith('p')){
+      sb.from('swipes').insert({swiper_id:authUser.id,swiped_id:p.id,action:dir}).catch(()=>{});
+    }
+  } else {
+    card.style.animation='swipeLeft .4s forwards';
+  }
+  currentSwipeIdx++;
+  setTimeout(()=>renderSwipeCards(),400);
+}
+
+function showMatchModal(p) {
+  const myAv=document.getElementById('match-my-av');
+  const theirAv=document.getElementById('match-their-av');
+  if(cu&&cu.avatar_url)myAv.innerHTML=`<img src="${cu.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  else myAv.textContent=cu?cu.emoji||'🙂':'🙂';
+  theirAv.textContent=p.emoji||'🙂';
+  document.getElementById('match-name-sub').innerHTML=`Bạn và <b>${p.name}</b> đã thích nhau!<br>Hãy bắt đầu trò chuyện 💬`;
+  document.getElementById('match-modal').classList.add('show');
+}
+
+function startMatchChat(){
+  closeModal('match-modal');
+  if(lastMatchedUser)openChatRoom(lastMatchedUser);
+}
+
+// PROFILE VIEW
+function viewProfile(p) {
+  if(typeof p==='string') p=SAMPLE_PROFILES.find(x=>x.id===p)||null;
+  if(!p)return;
+  document.getElementById('pv-name').textContent=p.name;
+  const age=p.age||(p.dob?new Date().getFullYear()-new Date(p.dob).getFullYear():'');
+  document.getElementById('pv-sub').textContent=`${age?age+' tuổi':''}${p.city?' • '+p.city:''}`;
+  document.getElementById('pv-bio').textContent=p.bio||'';
+  const avImg=document.getElementById('pv-av-img');
+  if(p.avatar_url){avImg.src=p.avatar_url;avImg.style.display='block';document.getElementById('pv-av-icon').style.display='none';}
+  else{avImg.style.display='none';document.getElementById('pv-av-icon').style.display='';document.getElementById('pv-av-icon').textContent=p.emoji||'🙂';}
+  document.getElementById('pv-online-dot').style.display=p.online?'block':'none';
+  const chips=[];
+  if(p.city)chips.push(`<div class="chip chip-rose">📍 ${p.city}</div>`);
+  if(p.height)chips.push(`<div class="chip">📏 ${p.height} cm</div>`);
+  if(p.gender)chips.push(`<div class="chip chip-gold">${{male:'👨 Nam',female:'👩 Nữ',other:'🌈 Khác'}[p.gender]||p.gender}</div>`);
+  document.getElementById('pv-chips').innerHTML=chips.join('');
+  document.getElementById('pv-interests').innerHTML=(p.interests||[]).map(i=>`<div class="chip">${i}</div>`).join('');
+  document.getElementById('profile-view').dataset.userId=p.id||'';
+  showScreen('profile-view');
+}
+
+function closeProfileView(){showTab('discover');}
+function likeThisUser(){swipeCard('like');closeProfileView();}
+function messageThisUser(){
+  const pId=document.getElementById('profile-view').dataset.userId;
+  const p=SAMPLE_PROFILES.find(x=>x.id===pId)||{id:pId,name:document.getElementById('pv-name').textContent,emoji:'🙂'};
+  closeProfileView();
+  openChatRoom(p);
+}
+
+// ============================================================
+// MESSAGES & REALTIME CHAT
+// ============================================================
+async function renderMessages() {
+  // Matches strip (sample for now)
+  const strip=document.getElementById('matches-strip-list');
+  if(strip){
+    strip.innerHTML=SAMPLE_PROFILES.filter(p=>p.online).map(p=>`
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0" onclick='openChatRoom(${JSON.stringify(p)})'>
+        <div style="position:relative">
+          <div class="avatar" style="width:58px;height:58px;font-size:26px;border:2.5px solid var(--rose)">${p.emoji}</div>
+          <div class="online-dot" style="position:absolute;bottom:2px;right:2px"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;max-width:60px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name.split(' ').pop()}</div>
+      </div>
+    `).join('');
+  }
+
+  if(!authUser){
+    document.getElementById('chat-list').innerHTML=`<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-title">Đăng nhập để chat</div></div>`;
+    return;
+  }
+
+  // Load conversations: messages where I am sender or receiver
+  const {data:msgs} = await sb.from('messages')
+    .select('*, sender:profiles!messages_sender_id_fkey(name,avatar_url), receiver:profiles!messages_receiver_id_fkey(name,avatar_url)')
+    .or(`sender_id.eq.${authUser.id},receiver_id.eq.${authUser.id}`)
+    .order('created_at',{ascending:false});
+
+  // Group by conversation partner
+  const convMap = {};
+  (msgs||[]).forEach(m=>{
+    const partnerId = m.sender_id===authUser.id ? m.receiver_id : m.sender_id;
+    const partnerInfo = m.sender_id===authUser.id ? m.receiver : m.sender;
+    if(!convMap[partnerId]){convMap[partnerId]={id:partnerId,name:partnerInfo?.name||'Người dùng',avatar_url:partnerInfo?.avatar_url||'',lastMsg:m.content||'📷 Ảnh',time:getTimeAgo(m.created_at),unread:0};}
+    if(!m.is_read && m.receiver_id===authUser.id) convMap[partnerId].unread++;
+  });
+
+  const convs=Object.values(convMap);
+  const list=document.getElementById('chat-list');
+  if(convs.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">💌</div><div class="empty-title">Chưa có cuộc trò chuyện</div><div class="empty-sub">Khám phá và ghép đôi để bắt đầu nhắn tin!</div></div>`;
+    return;
+  }
+  list.innerHTML=convs.map(c=>`
+    <div class="chat-item" onclick='openChatRoom(${JSON.stringify({id:c.id,name:c.name,avatar_url:c.avatar_url})})'>
+      <div class="chat-av-wrap">
+        <div class="avatar" style="width:52px;height:52px">
+          ${c.avatar_url?`<img src="${c.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`<span style="font-size:24px">🙂</span>`}
+        </div>
+      </div>
+      <div class="chat-body">
+        <div class="chat-name">${c.name}</div>
+        <div class="chat-preview">${c.lastMsg}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="chat-time">${c.time}</div>
+        ${c.unread>0?`<div class="chat-unread">${c.unread}</div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function openChatRoom(user) {
+  currentChatUser = user;
+  document.getElementById('cr-name').textContent = user.name;
+  document.getElementById('cr-status').textContent = user.online?'● Đang hoạt động':'Hoạt động gần đây';
+  document.getElementById('cr-status').style.color = user.online?'var(--teal)':'var(--text3)';
+  if(user.avatar_url){
+    document.getElementById('cr-av-img').src=user.avatar_url;
+    document.getElementById('cr-av-img').style.display='block';
+    document.getElementById('cr-av-icon').style.display='none';
+  } else {
+    document.getElementById('cr-av-img').style.display='none';
+    document.getElementById('cr-av-icon').style.display='';
+    document.getElementById('cr-av-icon').textContent=user.emoji||'🙂';
+  }
+  chatMessages=[];
+  showScreen('chat-room');
+
+  if(authUser) {
+    await loadChatMessages();
+    subscribeToChat();
+  }
+}
+
+async function loadChatMessages() {
+  if(!authUser||!currentChatUser) return;
+  const myId = authUser.id;
+  const theirId = currentChatUser.id;
+  // Only load real messages if both are real UUIDs
+  if(!isUUID(theirId)){
+    // Sample chat
+    chatMessages=[{sender_id:'other',content:'Xin chào! 👋',created_at:new Date().toISOString()},{sender_id:myId,content:'Chào bạn! 😊',created_at:new Date().toISOString()}];
+    renderChatMessages();
+    return;
+  }
+  const {data} = await sb.from('messages')
+    .select('*')
+    .or(`and(sender_id.eq.${myId},receiver_id.eq.${theirId}),and(sender_id.eq.${theirId},receiver_id.eq.${myId})`)
+    .order('created_at',{ascending:true});
+  chatMessages = data||[];
+  renderChatMessages();
+  // Mark as read
+  await sb.from('messages').update({is_read:true}).eq('receiver_id',myId).eq('sender_id',theirId);
+}
+
+function subscribeToChat() {
+  if(chatSubscription) chatSubscription.unsubscribe();
+  if(!isUUID(currentChatUser?.id)) return;
+  const myId=authUser.id, theirId=currentChatUser.id;
+  chatSubscription = sb.channel('chat-'+[myId,theirId].sort().join('-'))
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+      const msg=payload.new;
+      const relevant=(msg.sender_id===myId&&msg.receiver_id===theirId)||(msg.sender_id===theirId&&msg.receiver_id===myId);
+      if(relevant){chatMessages.push(msg);renderChatMessages();}
+    }).subscribe();
+}
+
+function renderChatMessages() {
+  const container=document.getElementById('chat-messages');
+  if(!container)return;
+  container.innerHTML=`<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px">💌 Bắt đầu cuộc trò chuyện</div>`+
+    chatMessages.map(m=>{
+      const isMe=m.sender_id===authUser?.id;
+      const timeStr=m.created_at?new Date(m.created_at).toLocaleTimeString('vi',{hour:'2-digit',minute:'2-digit'}):'';
+      if(m.image_url){
+        return `<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}">
+          <div class="msg-img-bubble ${isMe?'msg-me':'msg-them'}">
+            <img src="${m.image_url}" style="max-width:200px;border-radius:12px;display:block" onclick="window.open('${m.image_url}')">
+          </div>
+          <div class="msg-time ${isMe?'msg-time-me':'msg-time-them'}" style="padding:0 6px">${timeStr}</div>
+        </div>`;
+      }
+      return `<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}">
+        <div class="msg-bubble ${isMe?'msg-me':'msg-them'}">${escHtml(m.content||'')}</div>
+        <div class="msg-time ${isMe?'msg-time-me':'msg-time-them'}" style="padding:0 6px">${timeStr}</div>
+      </div>`;
+    }).join('');
+  setTimeout(()=>container.scrollTop=container.scrollHeight,80);
+}
+
+async function sendMessage() {
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text||!currentChatUser)return;
+  input.value=''; input.style.height='auto';
+
+  if(!authUser){showToast('⚠️ Bạn cần đăng nhập để nhắn tin');return;}
+  if(!isUUID(currentChatUser.id)){
+    // Sample chat: just show locally
+    chatMessages.push({sender_id:authUser.id,content:text,created_at:new Date().toISOString()});
+    renderChatMessages();
+    // Fake reply
+    setTimeout(()=>{
+      const replies=['😊 Hay đó!','Bạn nói đúng!','Kể thêm đi 😄','Thú vị quá!','Ừ, mình hiểu rồi!'];
+      chatMessages.push({sender_id:currentChatUser.id,content:replies[Math.floor(Math.random()*replies.length)],created_at:new Date().toISOString()});
+      renderChatMessages();
+    },1500+Math.random()*1000);
+    return;
+  }
+
+  const {error} = await sb.from('messages').insert({
+    sender_id:authUser.id, receiver_id:currentChatUser.id, content:text
+  });
+  if(error) showToast('❌ Gửi thất bại: '+error.message);
+}
+
+async function sendImageMessage(input) {
+  const file=input.files[0]; if(!file||!authUser||!currentChatUser)return;
+  showUploadProgress('Đang gửi ảnh...');
+  const path=`chat/${authUser.id}_${Date.now()}`;
+  const {error:upErr} = await sb.storage.from('lovelink').upload(path,file);
+  if(upErr){hideUploadProgress();showToast('❌ Upload thất bại');return;}
+  const {data} = sb.storage.from('lovelink').getPublicUrl(path);
+  if(!isUUID(currentChatUser.id)){
+    hideUploadProgress();
+    chatMessages.push({sender_id:authUser.id,image_url:data.publicUrl,created_at:new Date().toISOString()});
+    renderChatMessages();
+    return;
+  }
+  await sb.from('messages').insert({sender_id:authUser.id,receiver_id:currentChatUser.id,image_url:data.publicUrl,content:''});
+  hideUploadProgress();
+  input.value='';
+}
+
+function chatKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResizeChat(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function closeChatRoom(){if(chatSubscription){chatSubscription.unsubscribe();chatSubscription=null;}showTab('messages');}
+function showChatProfile(){if(currentChatUser)viewProfile(currentChatUser);}
+
+// ============================================================
+// PROFILE
+// ============================================================
+function renderProfile() {
+  if(!cu)return;
+  document.getElementById('profile-name-text').textContent=cu.name||'Tên của bạn';
+  document.getElementById('profile-handle-text').textContent=`@${(cu.name||'user').toLowerCase().replace(/\s/g,'_')}`;
+  const avImg=document.getElementById('profile-av-img');
+  const avPh=document.getElementById('profile-av-placeholder');
+  if(cu.avatar_url){avImg.src=cu.avatar_url;avImg.style.display='block';avPh.style.display='none';}
+  else{avImg.style.display='none';avPh.style.display='flex';avPh.textContent=cu.emoji||'🙂';}
+  const covImg=document.getElementById('profile-cover-img');
+  const covPh=document.getElementById('profile-cover-placeholder');
+  if(cu.cover_url){covImg.src=cu.cover_url;covImg.style.display='block';covPh.style.display='none';}
+  else{covImg.style.display='none';covPh.style.display='flex';}
+  document.getElementById('profile-bio-text').textContent=cu.bio||'Thêm tiểu sử để mọi người biết thêm về bạn ✨';
+  const chips=[];
+  if(cu.city)chips.push(`<div class="chip chip-rose">📍 ${cu.city}</div>`);
+  if(cu.height)chips.push(`<div class="chip">📏 ${cu.height} cm</div>`);
+  if(cu.dob){const age=new Date().getFullYear()-new Date(cu.dob).getFullYear();if(age>0&&age<100)chips.push(`<div class="chip chip-teal">🎂 ${age} tuổi</div>`);}
+  if(cu.gender)chips.push(`<div class="chip chip-gold">${{male:'👨 Nam',female:'👩 Nữ',other:'🌈 Khác'}[cu.gender]||cu.gender}</div>`);
+  document.getElementById('profile-info-chips').innerHTML=chips.join('');
+  document.getElementById('profile-interests').innerHTML=(cu.interests||[]).map(i=>`<div class="chip">${i}</div>`).join('')||'<div style="color:var(--text3);font-size:14px">Chưa có sở thích nào</div>';
+  // Photos
+  const photos=cu.photos||[];
+  document.getElementById('profile-photo-grid').innerHTML=photos.map(src=>`<div class="profile-grid-img"><img src="${src}"></div>`).join('')+
+    `<div class="profile-grid-img profile-grid-add" onclick="addPhoto()">+</div>`;
+  // Stats (async)
+  loadProfileStats();
+  // Edit form
+  document.getElementById('edit-name').value=cu.name||'';
+  document.getElementById('edit-bio').value=cu.bio||'';
+  if(cu.gender)document.getElementById('edit-gender').value=cu.gender;
+  document.getElementById('edit-height').value=cu.height||'';
+  if(cu.city){const sel=document.getElementById('edit-city');const opt=Array.from(sel.options).find(o=>o.text===cu.city);if(opt)sel.value=opt.value;}
+  if(cu.looking)document.getElementById('edit-looking').value=cu.looking;
+  buildInterestGrid('edit-interest-grid',cu.interests||[]);
+}
+
+async function loadProfileStats(){
+  if(!authUser)return;
+  const {count:postCount}=await sb.from('posts').select('*',{count:'exact',head:true}).eq('user_id',authUser.id);
+  const {count:matchCount}=await sb.from('swipes').select('*',{count:'exact',head:true}).eq('swiper_id',authUser.id).eq('action','like');
+  document.getElementById('p-stat-posts').textContent=postCount||0;
+  document.getElementById('p-stat-matches').textContent=matchCount||0;
+}
+
+async function saveProfile() {
+  cu.name=document.getElementById('edit-name').value.trim()||cu.name;
+  cu.bio=document.getElementById('edit-bio').value.trim();
+  cu.gender=document.getElementById('edit-gender').value;
+  cu.height=document.getElementById('edit-height').value;
+  cu.city=document.getElementById('edit-city').value;
+  cu.looking=document.getElementById('edit-looking').value;
+  if(authUser){
+    await sb.from('profiles').update({name:cu.name,bio:cu.bio,gender:cu.gender,height:cu.height,city:cu.city,looking:cu.looking,interests:cu.interests}).eq('id',cu.id);
+  }
+  showScreen('profile'); renderProfile(); updateHomeUI(); showToast('✅ Đã lưu hồ sơ!');
+}
+
+function triggerAvatarChange(){document.getElementById('profile-avatar-input').click();}
+function triggerCoverChange(){document.getElementById('profile-cover-input').click();}
+
+async function handleProfileAvatar(input) {
+  const file=input.files[0]; if(!file)return;
+  showUploadProgress('Đang tải ảnh lên...');
+  const path=`avatars/${authUser.id}_${Date.now()}`;
+  const {error}=await sb.storage.from('lovelink').upload(path,file,{upsert:true});
+  if(error){hideUploadProgress();showToast('❌ Upload thất bại');return;}
+  const {data}=sb.storage.from('lovelink').getPublicUrl(path);
+  cu.avatar_url=data.publicUrl;
+  await sb.from('profiles').update({avatar_url:cu.avatar_url}).eq('id',cu.id);
+  hideUploadProgress(); renderProfile(); updateHomeUI(); showToast('📷 Đã cập nhật ảnh đại diện!');
+}
+
+async function handleProfileCover(input) {
+  const file=input.files[0]; if(!file)return;
+  showUploadProgress('Đang tải ảnh bìa...');
+  const path=`covers/${authUser.id}_${Date.now()}`;
+  const {error}=await sb.storage.from('lovelink').upload(path,file,{upsert:true});
+  if(error){hideUploadProgress();showToast('❌ Upload thất bại');return;}
+  const {data}=sb.storage.from('lovelink').getPublicUrl(path);
+  cu.cover_url=data.publicUrl;
+  await sb.from('profiles').update({cover_url:cu.cover_url}).eq('id',cu.id);
+  hideUploadProgress(); renderProfile(); showToast('🌄 Đã cập nhật ảnh bìa!');
+}
+
+async function handleProfilePhoto(input) {
+  const file=input.files[0]; if(!file)return;
+  showUploadProgress('Đang tải ảnh...');
+  const path=`photos/${authUser.id}_${Date.now()}`;
+  const {error}=await sb.storage.from('lovelink').upload(path,file);
+  if(error){hideUploadProgress();showToast('❌ Upload thất bại');return;}
+  const {data}=sb.storage.from('lovelink').getPublicUrl(path);
+  if(!cu.photos)cu.photos=[];
+  cu.photos.push(data.publicUrl);
+  await sb.from('profiles').update({photos:cu.photos}).eq('id',cu.id);
+  hideUploadProgress(); renderProfile(); showToast('📸 Đã thêm ảnh!');
+}
+
+function addPhoto(){document.getElementById('profile-photo-input').click();}
+
+// ============================================================
+// FILTER
+// ============================================================
+function showFilterModal(){document.getElementById('filter-modal').classList.add('show');}
+function updateAgeFilter(){const mn=document.getElementById('age-min').value,mx=document.getElementById('age-max').value;document.getElementById('age-display').textContent=`${Math.min(mn,mx)} – ${Math.max(mn,mx)}`;}
+function updateDistFilter(){document.getElementById('dist-display').textContent=document.getElementById('dist-range').value+' km';}
+function toggleGenderFilter(el){el.classList.toggle('selected');}
+function applyFilter(){closeModal('filter-modal');showToast('✅ Đã áp dụng bộ lọc!');renderDiscover();}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+function showNotifications() {
+  const list=document.getElementById('notif-list');
+  const sample=[
+    {text:'<b>Ngọc Anh</b> đã thích hồ sơ của bạn 💖',time:'2 phút trước',icon:'💖',read:false},
+    {text:'<b>Thu Hà</b> đã nhắn tin cho bạn 💬',time:'1 giờ trước',icon:'💬',read:true},
+    {text:'Hồ sơ của bạn được xem 28 lần hôm nay 👀',time:'3 giờ trước',icon:'👀',read:true},
+  ];
+  list.innerHTML=sample.map(n=>`
+    <div class="notif-item ${n.read?'':'unread'}">
+      <div class="notif-icon">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('notif-modal').classList.add('show');
+  document.getElementById('notif-badge').style.display='none';
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+let toastTimeout;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function showUploadProgress(msg='Đang tải...'){
+  document.getElementById('upload-progress-text').textContent=msg;
+  document.getElementById('upload-progress').classList.add('show');
+}
+function hideUploadProgress(){document.getElementById('upload-progress').classList.remove('show');}
+
+function getTimeAgo(dateStr) {
+  if(!dateStr)return '';
+  const diff=Date.now()-new Date(dateStr).getTime();
+  const m=Math.floor(diff/60000);
+  if(m<1)return 'Vừa xong';
+  if(m<60)return m+' phút trước';
+  const h=Math.floor(m/60);
+  if(h<24)return h+' giờ trước';
+  return Math.floor(h/24)+' ngày trước';
+}
+
+function isUUID(str){return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str||'');}
+
+function escHtml(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  // Check existing session
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){
+    authUser = session.user;
+    await loadProfile();
+  }
+  buildInterestGrid('interest-grid',[]);
+  renderSetupSteps();
+  // Listen for auth changes
+  sb.auth.onAuthStateChange(async (event,session)=>{
+    if(event==='SIGNED_IN' && session){
+      authUser=session.user;
+    } else if(event==='SIGNED_OUT'){
+      authUser=null; cu=null;
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
