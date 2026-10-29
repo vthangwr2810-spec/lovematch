@@ -34,137 +34,222 @@ jobs:
           <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%89%EF%B8%8F%3C/text%3E%3C/svg%3E">
           <style>
           :root{--bg:#e9eef4;--card:#fbfcfe;--ink:#1d2a44;--soft:#5a6a86;--red:#d6453d;--blue:#2f6fb5;--ok:#1f8a63;--line:#c9d3e1;color-scheme:light}
-          @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111a2b;--card:#1a2640;--ink:#e8eefb;--soft:#9fb0cf;--red:#ef6a61;--blue:#6aa6e8;--ok:#4fcf9f;--line:#2c3b5c;color-scheme:dark}}
+          @media(prefers-color-scheme:dark){:root{--bg:#111a2b;--card:#1a2640;--ink:#e8eefb;--soft:#9fb0cf;--red:#ef6a61;--blue:#6aa6e8;--ok:#4fcf9f;--line:#2c3b5c;color-scheme:dark}}
           *{box-sizing:border-box}
           html,body{margin:0}
           body{background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Palatino Linotype",serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
-          main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
-          h1{font-size:2rem;margin:8px 0 2px;letter-spacing:.5px}
-          .sub{color:var(--soft);margin:0 0 20px}
-          .sheet{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px 18px;position:relative}
-          .sheet::before{content:"";position:absolute;inset:0 0 auto 0;height:8px;border-radius:6px 6px 0 0;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,var(--card) 12px 20px,var(--blue) 20px 32px,var(--card) 32px 40px)}
-          .sheet>:first-child{margin-top:10px}
+          main{max-width:560px;margin:0 auto;padding:8px 16px 60px}
+          nav{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;align-items:center;padding:10px 16px;max-width:560px;margin:0 auto;font-family:system-ui,sans-serif}
+          nav button{font:600 .9rem system-ui,sans-serif;background:none;border:0;color:var(--ink);padding:6px 8px;border-radius:6px;cursor:pointer}
+          nav button:hover{background:var(--card)}
+          #st{margin-left:auto;font:600 .9rem system-ui,sans-serif;cursor:pointer}
+          h1{font-size:2rem;margin:4px 0 0}h2{margin:6px 0}h3{margin:20px 0 8px}
+          .sub{color:var(--soft);margin:0 0 16px}
+          .sheet{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px 18px 18px;position:relative;overflow:hidden;margin-bottom:14px}
+          .sheet::before{content:"";position:absolute;inset:0 0 auto 0;height:8px;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,var(--card) 12px 20px,var(--blue) 20px 32px,var(--card) 32px 40px)}
+          .seal{position:absolute;top:18px;right:16px;font-size:2rem}
           .item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);color:inherit;font:inherit;border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:0 0 10px;cursor:pointer}
           .item:hover{border-color:var(--blue)}
-          .item b{display:block}
-          .item small{color:var(--soft)}
+          .item b{display:block}.item small{color:var(--soft)}
           .stamp{margin-left:auto;font:600 .75rem system-ui,sans-serif;border:2px solid var(--soft);color:var(--soft);border-radius:4px;padding:2px 8px;transform:rotate(-6deg)}
           .item.done .stamp{border-color:var(--ok);color:var(--ok)}
-          .puzzle{font-size:1.2rem;white-space:pre-wrap;margin:6px 0 16px}
-          input,textarea{width:100%;font:inherit;color:inherit;background:transparent;border:0;border-bottom:2px solid var(--line);padding:8px 2px;margin:0 0 12px;outline:0}
+          .puzzle{font-size:1.2rem;white-space:pre-wrap;margin:6px 28px 16px 0}
+          input,textarea,select{width:100%;font:inherit;color:inherit;background:transparent;border:0;border-bottom:2px solid var(--line);padding:8px 2px;margin:0 0 12px;outline:0}
+          select option{color:#000}
           input:focus,textarea:focus{border-color:var(--blue)}
           label{display:block;color:var(--soft);font:.85rem system-ui,sans-serif}
-          button.b{font:600 1rem system-ui,sans-serif;background:var(--ink);color:var(--card);border:0;border-radius:6px;padding:10px 18px;margin:0 8px 8px 0;cursor:pointer}
-          button.b.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
-          button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-          .msg{margin:12px 0 0;min-height:1.4em;font-family:system-ui,sans-serif}
+          .b{font:600 1rem system-ui,sans-serif;background:var(--ink);color:var(--card);border:0;border-radius:6px;padding:10px 16px;margin:0 8px 8px 0;cursor:pointer}
+          .b.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+          button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+          .msg{margin:10px 0 0;min-height:1.4em;font-family:system-ui,sans-serif}
           .bad{color:var(--red)}.good{color:var(--ok)}
           .reply{border-left:4px solid var(--ok);padding:4px 0 4px 14px;margin:14px 0;font-style:italic}
-          .link{font:.85rem system-ui,sans-serif}
+          .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+          .shopi{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px;text-align:center}
+          .shopi .b{width:100%;margin:8px 0 0}
+          .pv{height:64px;display:flex;align-items:center;justify-content:center}
+          .av{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--card)}
+          .shp{width:76px;height:46px;background:var(--card);border:1px solid var(--line)}
+          .row{display:flex;gap:14px;align-items:center}
+          .ach{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-family:system-ui,sans-serif;font-size:.92rem}
+          .ach.off{opacity:.45}
+          .emo button{font-size:1.5rem;background:none;border:1px solid var(--line);border-radius:8px;margin:0 6px 6px 0;padding:4px 8px;cursor:pointer}
+          #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--card);font:600 .9rem system-ui,sans-serif;padding:10px 16px;border-radius:20px;max-width:90%;text-align:center;z-index:9}
           @media(prefers-reduced-motion:no-preference){.shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}}
           </style>
           </head>
           <body>
-          <main>
-          <h1>Thư Đố</h1>
-          <p class="sub">Giải câu đố để mở thư. Rồi viết một lá thư đố gửi cho người khác.</p>
-          
-          <section id="inbox"></section>
-          
-          <section id="letter" hidden></section>
-          
-          <section id="compose" hidden>
-          <div class="sheet">
-          <label for="cf">Tên của bạn</label><input id="cf" maxlength="30">
-          <label for="cp">Câu đố</label><textarea id="cp" rows="3" maxlength="300"></textarea>
-          <label for="ca">Đáp án (nhiều đáp án ngăn cách bằng dấu |)</label><input id="ca" maxlength="60">
-          <label for="ch">Gợi ý (không bắt buộc)</label><input id="ch" maxlength="120">
-          <label for="cm">Lời nhắn mở ra khi giải đúng</label><textarea id="cm" rows="3" maxlength="300"></textarea>
-          <button class="b" id="mk">Tạo liên kết thư</button><button class="b alt" id="cb">Quay lại</button>
-          <p class="msg" id="cmsg"></p>
-          <input id="clink" class="link" readonly hidden>
-          <button class="b" id="cc" hidden>Sao chép liên kết</button>
-          </div>
-          </section>
-          </main>
+          <nav><button data-a="inbox">Hộp thư</button><button data-a="shop">Cửa hàng</button><button data-a="prof">Hồ sơ</button><span id="st" data-a="pay"></span></nav>
+          <main><h1>Thư Đố</h1><p class="sub">Giải câu đố để mở thư. Rồi viết thư đố gửi cho người khác.</p><section id="v"></section></main>
+          <div id="toast" hidden></div>
           
           <script>
+          /* Dán liên kết thanh toán thật vào đây (ví dụ trang Stripe, PayOS, MoMo). Để trống = chế độ thử nghiệm. */
+          var PAY_URL="";
+          var HINT=5,TRIES=2;
+          var ITEMS=[
+          {id:"fr0",t:"frame",n:"Không khung",p:0,v:"border:3px solid var(--line)"},
+          {id:"fr1",t:"frame",n:"Khung vàng",p:20,v:"border:4px solid #d4a72c;box-shadow:0 0 0 3px #f6e27a"},
+          {id:"fr2",t:"frame",n:"Khung cầu vồng",p:35,v:"border:4px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,#e5484d,#f5a524,#46a758,#3e63dd,#8e4ec6) border-box"},
+          {id:"fr3",t:"frame",n:"Khung đứt nét",p:15,v:"border:4px dashed var(--blue)"},
+          {id:"sh0",t:"shape",n:"Chữ nhật",p:0,v:"border-radius:6px"},
+          {id:"sh1",t:"shape",n:"Bo tròn",p:25,v:"border-radius:30px"},
+          {id:"sh2",t:"shape",n:"Cuộn giấy",p:40,v:"border-radius:44px 6px 44px 6px"},
+          {id:"sh3",t:"shape",n:"Tem răng cưa",p:55,v:"border:6px dotted var(--blue);border-radius:10px"},
+          {id:"se0",t:"seal",n:"Dấu đỏ",p:0,v:"🔴"},{id:"se1",t:"seal",n:"Dấu hoa",p:15,v:"🌸"},
+          {id:"se2",t:"seal",n:"Dấu rồng",p:30,v:"🐉"},{id:"se3",t:"seal",n:"Dấu trăng",p:30,v:"🌙"},
+          {id:"se4",t:"seal",n:"Dấu sao",p:45,v:"⭐"},{id:"se5",t:"seal",n:"Dấu bướm",p:45,v:"🦋"}
+          ];
+          var KEY={frame:"fr",shape:"sh",seal:"se"};
           var L=[
-          {id:1,f:"Lan, Đà Nẵng",p:"3, 6, 12, 24, ?",a:"48",h:"Mỗi số gấp mấy lần số đứng trước nó?",m:"Mình học được rằng nhân đôi mỗi ngày một chút, sau một năm sẽ thành chuyện lớn. Chúc bạn một ngày nhân đôi niềm vui."},
-          {id:2,f:"Minh, Huế",p:"Mật mã: KDQK SKXF\nMỗi chữ cái bị đẩy tiến lên 3 vị trí trong bảng chữ cái. Hãy giải mã.",a:"hanh phuc",h:"K lùi 3 bước là H.",m:"Hạnh phúc của mình là ly cà phê buổi sáng và một người nhắn tin hỏi hôm nay bạn có khỏe không. Hôm nay mình hỏi bạn đó."},
-          {id:3,f:"Bà Tư, Cần Thơ",p:"Có cổ mà chẳng có đầu,\nCó miệng không răng, đựng nhiều thứ hay.\nLà gì?",a:"chai|cai chai",h:"Nó nằm trên bàn ăn.",m:"Bà thương cháu. Nhớ ăn cơm đúng bữa nghe con."},
-          {id:4,f:"Hùng, Hà Nội",p:"2 con mèo bắt 2 con chuột trong 2 phút.\nHỏi 100 con mèo bắt 100 con chuột trong mấy phút?",a:"2|2 phut|hai",h:"Mỗi con mèo bắt mấy con chuột trong 2 phút?",m:"Nhiều người lúc đầu trả lời 100. Bạn nghĩ chậm lại một chút và ra đáp án đúng, giỏi lắm."},
-          {id:5,f:"Thảo, Đà Lạt",p:"1, 1, 2, 3, 5, 8, ?",a:"13",h:"Cộng hai số liền trước.",m:"Dãy số này có trong hoa hướng dương và vỏ ốc. Hôm nay nếu thấy thứ gì đẹp tự nhiên, hãy dừng lại nhìn một lát."},
-          {id:6,f:"Khoa, Sài Gòn",p:"Càng lấy đi thì càng lớn.\nLà gì?",a:"ho|cai ho|lo|cai lo",h:"Hãy nghĩ đến cái xẻng.",m:"Có những thứ càng bớt đi càng rộng ra, như lo lắng trong đầu. Chúc bạn tối nay đầu óc thật thoáng."}
+          {id:1,f:"Lan, Đà Nẵng",se:"se1",sh:"sh1",p:"3, 6, 12, 24, ?",a:"48",h:"Mỗi số gấp mấy lần số đứng trước nó?",m:"Nhân đôi mỗi ngày một chút, sau một năm sẽ thành chuyện lớn. Chúc bạn một ngày nhân đôi niềm vui."},
+          {id:2,f:"Minh, Huế",se:"se3",sh:"sh2",p:"Mật mã: KDQK SKXF\nMỗi chữ cái bị đẩy tiến lên 3 vị trí trong bảng chữ cái. Hãy giải mã.",a:"hanh phuc",h:"K lùi 3 bước là H.",m:"Hạnh phúc của mình là ly cà phê buổi sáng và một người nhắn hỏi hôm nay bạn có khỏe không. Hôm nay mình hỏi bạn đó."},
+          {id:3,f:"Bà Tư, Cần Thơ",se:"se2",sh:"sh0",p:"Có cổ mà chẳng có đầu,\nCó miệng không răng, đựng nhiều thứ hay.\nLà gì?",a:"chai|cai chai",h:"Nó nằm trên bàn ăn.",m:"Bà thương cháu. Nhớ ăn cơm đúng bữa nghe con."},
+          {id:4,f:"Hùng, Hà Nội",se:"se0",sh:"sh0",p:"2 con mèo bắt 2 con chuột trong 2 phút.\nHỏi 100 con mèo bắt 100 con chuột trong mấy phút?",a:"2|2 phut|hai",h:"Mỗi con mèo bắt mấy con chuột trong 2 phút?",m:"Nhiều người lúc đầu trả lời 100. Bạn nghĩ chậm lại một chút và ra đáp án đúng, giỏi lắm."},
+          {id:5,f:"Thảo, Đà Lạt",se:"se5",sh:"sh1",p:"1, 1, 2, 3, 5, 8, ?",a:"13",h:"Cộng hai số liền trước.",m:"Dãy số này có trong hoa hướng dương và vỏ ốc. Hôm nay thấy thứ gì đẹp tự nhiên, hãy dừng lại nhìn một lát."},
+          {id:6,f:"Khoa, Sài Gòn",se:"se4",sh:"sh3",p:"Càng lấy đi thì càng lớn.\nLà gì?",a:"ho|cai ho|lo|cai lo",h:"Hãy nghĩ đến cái xẻng.",m:"Có những thứ càng bớt đi càng rộng ra, như lo lắng trong đầu. Chúc bạn tối nay đầu óc thật thoáng."}
           ];
           var $=function(i){return document.getElementById(i)};
-          var done={};
-          try{done=JSON.parse(localStorage.getItem("thudo")||"{}")}catch(e){}
-          function save(){try{localStorage.setItem("thudo",JSON.stringify(done))}catch(e){}}
+          var S=Object.assign({name:"Bạn",av:"🐱",fr:"fr0",sh:"sh0",se:"se0",dia:10,own:["fr0","sh0","se0"],done:{},fails:{},hints:{},clean:0,streak:0,best:0,last:"",wrote:0,fol:[],ach:{},mine:{}},(function(){try{return JSON.parse(localStorage.getItem("thudo2")||"{}")}catch(e){return{}}})());
+          function save(){try{localStorage.setItem("thudo2",JSON.stringify(S))}catch(e){}}
           function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
           function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim()}
-          function show(v){["inbox","letter","compose"].forEach(function(x){$(x).hidden=x!==v});window.scrollTo(0,0)}
           function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
           function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))))}
+          function hs(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return"c"+(h>>>0).toString(36)}
+          function it(id){return ITEMS.filter(function(x){return x.id===id})[0]}
+          function today(){return new Date().toLocaleDateString("sv")}
+          function cnt(){return Object.keys(S.done).length}
+          function tries(k){var f=S.fails[k];return f&&f.d===today()?f.n:0}
+          var tt;function toast(m){var t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(function(){t.hidden=true},3200)}
+          function stat(){$("st").textContent="🔥"+S.streak+"  💎"+S.dia}
+          var ACH=[
+          ["first","Thư đầu tiên","Mở 1 thư",function(){return cnt()>=1}],
+          ["five","Người đọc thư","Mở 5 thư",function(){return cnt()>=5}],
+          ["all","Hết hộp thư","Mở toàn bộ thư mẫu",function(){return L.every(function(l){return S.done["s"+l.id]})}],
+          ["clean","Không cần gợi ý","Mở 3 thư không dùng gợi ý",function(){return S.clean>=3}],
+          ["s3","Ba ngày liền","Chuỗi 3 ngày",function(){return S.best>=3}],
+          ["s7","Một tuần thư","Chuỗi 7 ngày",function(){return S.best>=7}],
+          ["wr","Người gửi thư","Tạo thư đố đầu tiên",function(){return S.wrote>=1}],
+          ["shop","Chủ nhân con dấu","Mua 1 món trong cửa hàng",function(){return S.own.length>3}],
+          ["fol","Có bạn thư","Theo dõi 1 người",function(){return S.fol.length>=1}]
+          ];
+          function chk(){ACH.forEach(function(a){if(!S.ach[a[0]]&&a[3]()){S.ach[a[0]]=1;S.dia+=5;toast("Thành tích: "+a[1]+" (+5 💎)")}});save();stat()}
+          (function(){var t=today();if(S.last===t)return;var y=new Date(Date.now()-864e5).toLocaleDateString("sv");S.streak=S.last===y?S.streak+1:1;S.best=Math.max(S.best,S.streak);S.last=t;var g=2+(S.streak%7===0?10:0);S.dia+=g;save();setTimeout(function(){toast("Chuỗi "+S.streak+" ngày. Quà hằng ngày +"+g+" 💎")},400)})();
           
-          function inbox(){
-            var n=Object.keys(done).length,h='<p class="sub">Đã mở '+n+'/'+L.length+' thư.</p>';
-            L.forEach(function(l){
-              var d=done[l.id];
-              h+='<button class="item'+(d?' done':'')+'" data-id="'+l.id+'"><span><b>Thư từ '+esc(l.f)+'</b><small>'+(d?'Đã giải':'Đang khóa')+'</small></span><span class="stamp">'+(d?'ĐÃ MỞ':'MỚI')+'</span></button>';
-            });
-            h+='<button class="b" id="wr" style="margin-top:8px">Viết thư đố</button>';
-            $("inbox").innerHTML=h;
-            $("inbox").querySelectorAll(".item").forEach(function(b){b.onclick=function(){openLetter(L.filter(function(l){return l.id==b.dataset.id})[0])}});
-            $("wr").onclick=function(){show("compose")};
-            show("inbox");
-          }
+          var A={},V=$("v");
+          function go(h){V.innerHTML=h;window.scrollTo(0,0);stat()}
+          
+          A.inbox=function(){
+            if(location.hash){history.replaceState(null,"",location.pathname)}
+            var h='<p class="sub">Đã mở '+cnt()+' thư. Mỗi thư có '+TRIES+' lượt thử mỗi ngày.</p>';
+            L.forEach(function(l){var d=S.done["s"+l.id],lk=!d&&tries("s"+l.id)>=TRIES;
+              h+='<button class="item'+(d?' done':'')+'" data-a="open" data-i="'+l.id+'"><span><b>Thư từ '+esc(l.f)+'</b><small>'+(d?'Đã giải':lk?'Hết lượt hôm nay':'Đang khóa')+'</small></span><span class="stamp">'+(d?'ĐÃ MỞ':lk?'HẾT LƯỢT':'MỚI')+'</span></button>'});
+            go(h+'<button class="b" data-a="wr">Viết thư đố</button>');
+          };
+          A.open=function(i){openLetter(L.filter(function(l){return l.id==i})[0])};
           
           function openLetter(l){
-            var d=l.id&&done[l.id];
-            $("letter").innerHTML='<div class="sheet"><p class="sub" style="margin-bottom:4px">Thư từ '+esc(l.f)+'</p>'
-             +'<div class="puzzle">'+esc(l.p)+'</div>'
-             +'<label for="ans">Câu trả lời của bạn</label><input id="ans" autocomplete="off">'
-             +'<button class="b" id="ck">Mở thư</button><button class="b alt" id="hn">Xem gợi ý</button><button class="b alt" id="bk">Về hộp thư</button>'
-             +'<p class="msg" id="out"></p></div>';
-            $("bk").onclick=function(){location.hash="";inbox()};
-            $("hn").onclick=function(){$("out").className="msg";$("out").textContent=l.h?"Gợi ý: "+l.h:"Người gửi không để lại gợi ý."};
-            function check(){
-              var v=norm($("ans").value),ok=String(l.a).split("|").some(function(x){return norm(x)===v&&v});
-              if(ok){
-                if(l.id){done[l.id]=1;save()}
-                $("out").className="msg good";
-                $("out").innerHTML='Đúng rồi, thư đã mở.<div class="reply">'+esc(l.m||"")+'</div>';
-              }else{
-                $("out").className="msg bad";$("out").textContent="Chưa đúng. Thử lại hoặc xem gợi ý.";
-                $("ans").classList.remove("shake");void $("ans").offsetWidth;$("ans").classList.add("shake");
-              }
+            var k=l.id?"s"+l.id:l.k,sh=it(l.sh)||it("sh0"),se=it(l.se)||it("se0");
+            go('<div class="sheet" style="'+sh.v+'"><p class="sub" style="margin-bottom:4px">Thư từ '+esc(l.f)+'</p><div class="puzzle">'+esc(l.p)+'</div><div id="play"></div><div class="reply" id="hb" hidden></div><p class="msg" id="out"></p><button class="b alt" data-a="hint">Gợi ý ('+HINT+' 💎)</button><button class="b alt" data-a="inbox">Về hộp thư</button><span class="seal">'+se.v+'</span></div>');
+            var cur={l:l,k:k};A.cur=cur;draw();
+            if(S.hints[k])showHint();
+          }
+          function draw(){
+            var l=A.cur.l,k=A.cur.k,n=tries(k),p=$("play");
+            if(S.done[k]){p.innerHTML='<div class="reply">'+esc(l.m||"")+'</div>';return}
+            if(n>=TRIES){p.innerHTML='<p class="msg bad">Hết '+TRIES+' lượt hôm nay. Quay lại vào ngày mai, hoặc dùng gợi ý.</p>';return}
+            p.innerHTML='<label for="ans">Câu trả lời (còn '+(TRIES-n)+' lượt)</label><input id="ans" autocomplete="off"><button class="b" data-a="chk">Mở thư</button>';
+            $("ans").focus();
+          }
+          function showHint(){var b=$("hb");b.hidden=false;b.textContent="Gợi ý: "+(A.cur.l.h||"Người gửi không để lại gợi ý.")}
+          A.hint=function(){
+            var k=A.cur.k;if(S.hints[k])return showHint();
+            if(S.dia<HINT){toast("Cần "+HINT+" 💎 để xem gợi ý");return A.pay()}
+            S.dia-=HINT;S.hints[k]=1;save();stat();showHint();
+          };
+          A.chk=function(){
+            var l=A.cur.l,k=A.cur.k,v=norm($("ans").value);if(!v)return;
+            var ok=String(l.a).split("|").some(function(x){return norm(x)===v});
+            if(ok){
+              if(!S.done[k]){S.done[k]=1;if(!S.mine[k]){var g=S.hints[k]?3:5;if(!S.hints[k])S.clean++;S.dia+=g;toast("Đúng rồi! +"+g+" 💎")}}
+              chk();draw();$("out").textContent="";
+            }else{
+              S.fails[k]={n:tries(k)+1,d:today()};save();var left=TRIES-tries(k);draw();
+              $("out").className="msg bad";$("out").textContent=left>0?"Chưa đúng. Còn "+left+" lượt.":"Hết lượt hôm nay.";
             }
-            $("ck").onclick=check;
-            $("ans").onkeydown=function(e){if(e.key==="Enter")check()};
-            show("letter");$("ans").focus();
-          }
-          
-          $("cb").onclick=function(){show("inbox")};
-          $("mk").onclick=function(){
-            var o={f:$("cf").value.trim()||"Người lạ",p:$("cp").value.trim(),a:$("ca").value.trim(),h:$("ch").value.trim(),m:$("cm").value.trim()};
-            if(!o.p||!o.a){$("cmsg").className="msg bad";$("cmsg").textContent="Cần nhập câu đố và đáp án.";return}
-            var url=location.href.split("#")[0]+"#l="+enc(o);
-            $("clink").value=url;$("clink").hidden=false;$("cc").hidden=false;
-            $("cmsg").className="msg good";$("cmsg").textContent="Gửi liên kết này cho bạn bè. Người mở sẽ thấy đúng lá thư của bạn.";
           };
-          $("cc").onclick=function(){
-            $("clink").select();
-            try{navigator.clipboard.writeText($("clink").value);$("cmsg").textContent="Đã sao chép."}catch(e){document.execCommand("copy")}
+          document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id==="ans")A.chk()});
+          
+          function opts(t){return ITEMS.filter(function(x){return x.t===t&&S.own.indexOf(x.id)>-1}).map(function(x){return'<option value="'+x.id+'"'+(S[KEY[t]]===x.id?' selected':'')+'>'+x.n+'</option>'}).join("")}
+          A.wr=function(){
+            go('<div class="sheet"><h2>Viết thư đố</h2><label for="cp">Câu đố</label><textarea id="cp" rows="3" maxlength="300"></textarea><label for="ca">Đáp án (nhiều đáp án ngăn cách bằng dấu |)</label><input id="ca" maxlength="60"><label for="ch">Gợi ý (không bắt buộc)</label><input id="ch" maxlength="120"><label for="cm">Lời nhắn mở ra khi giải đúng</label><textarea id="cm" rows="3" maxlength="300"></textarea><label for="cs">Con dấu</label><select id="cs">'+opts("seal")+'</select><label for="cq">Hình dáng thư</label><select id="cq">'+opts("shape")+'</select><button class="b" data-a="mk">Tạo liên kết thư</button><p class="msg" id="cmsg"></p><input id="clink" readonly hidden><button class="b" data-a="cc" hidden id="ccb">Sao chép liên kết</button></div>');
+          };
+          A.mk=function(){
+            var o={f:S.name,p:$("cp").value.trim(),a:$("ca").value.trim(),h:$("ch").value.trim(),m:$("cm").value.trim(),se:$("cs").value,sh:$("cq").value},m=$("cmsg");
+            if(!o.p||!o.a){m.className="msg bad";m.textContent="Cần nhập câu đố và đáp án.";return}
+            var c=enc(o);S.mine[hs(c)]=1;S.wrote++;chk();
+            $("clink").value=location.href.split("#")[0]+"#l="+c;$("clink").hidden=false;$("ccb").hidden=false;
+            m.className="msg good";m.textContent="Gửi liên kết này cho bạn bè. Họ sẽ thấy đúng lá thư của bạn.";
+          };
+          A.cc=function(){$("clink").select();try{navigator.clipboard.writeText($("clink").value);toast("Đã sao chép")}catch(e){document.execCommand("copy")}};
+          
+          function pv(x){return x.t==="frame"?'<div class="av" style="'+x.v+'">🐱</div>':x.t==="shape"?'<div class="shp" style="'+x.v+'"></div>':'<span style="font-size:2rem">'+x.v+'</span>'}
+          A.shop=function(){
+            var h='<h2>Cửa hàng</h2><p class="sub">Bạn có '+S.dia+' 💎 <button class="b alt" data-a="pay" style="margin-left:8px">Nạp</button></p>';
+            [["frame","Khung avatar"],["shape","Hình dáng thư"],["seal","Con dấu"]].forEach(function(g){
+              h+='<h3>'+g[1]+'</h3><div class="grid">';
+              ITEMS.filter(function(x){return x.t===g[0]}).forEach(function(x){var own=S.own.indexOf(x.id)>-1,on=S[KEY[x.t]]===x.id;
+                h+='<div class="shopi"><div class="pv">'+pv(x)+'</div><b>'+x.n+'</b><button class="b'+(on?' alt':'')+'" data-a="'+(own?'use':'buy')+'" data-i="'+x.id+'">'+(on?'Đang dùng':own?'Dùng':x.p+' 💎')+'</button></div>'});
+              h+='</div>'});
+            go(h);
+          };
+          A.use=function(i){S[KEY[it(i).t]]=i;save();A.shop()};
+          A.buy=function(i){var x=it(i);if(S.dia<x.p){toast("Chưa đủ kim cương");return A.pay()}S.dia-=x.p;S.own.push(i);S[KEY[x.t]]=i;toast("Đã mua "+x.n);chk();A.shop()};
+          
+          A.pay=function(){
+            go('<h2>Nạp kim cương</h2><p class="sub">'+(PAY_URL?'Thanh toán an toàn qua cổng đối tác.':'Chế độ thử nghiệm: chưa kết nối thanh toán thật, bấm nạp sẽ nhận miễn phí.')+'</p>'
+             +[[50,"20.000₫"],[130,"50.000₫"],[300,"100.000₫"]].map(function(p){return'<button class="item" data-a="pack" data-i="'+p[0]+'"><b>'+p[0]+' 💎</b><span class="stamp">'+p[1]+'</span></button>'}).join(""));
+          };
+          A.pack=function(i){
+            if(PAY_URL){location.href=PAY_URL+(PAY_URL.indexOf("?")>-1?"&":"?")+"pack="+i;return}
+            S.dia+=+i;save();toast("Đã thêm "+i+" 💎 (thử nghiệm)");A.pay();
           };
           
-          function route(){
-            var m=location.hash.match(/^#l=(.+)$/);
-            if(m){try{openLetter(dec(m[1]));return}catch(e){}}
-            inbox();
+          function link(){return location.href.split("#")[0]+"#u="+enc({n:S.name,a:S.av,f:S.fr,c:cnt(),b:S.best})}
+          function card(u,btn){return'<div class="sheet"><div class="row"><div class="av" style="'+(it(u.f)||it("fr0")).v+'">'+esc(u.a||"🙂")+'</div><div><h2>'+esc(u.n)+'</h2><span class="sub">Đã mở '+(u.c|0)+' thư. Chuỗi dài nhất '+(u.b|0)+' ngày.</span></div></div>'+(btn||"")+'</div>'}
+          A.prof=function(){
+            var h='<div class="sheet"><div class="row"><div class="av" style="'+it(S.fr).v+'">'+S.av+'</div><div><label for="nm">Tên hiển thị</label><input id="nm" maxlength="20" value="'+esc(S.name)+'" style="margin:0"></div></div><div class="emo" style="margin-top:12px">'
+             +["🐱","🐶","🦊","🐼","🐸","🦉","🐧","🐰"].map(function(e){return'<button data-a="av" data-i="'+e+'" aria-label="Chọn '+e+'">'+e+'</button>'}).join("")
+             +'</div><p>💎 '+S.dia+' &nbsp; 🔥 '+S.streak+' ngày (dài nhất '+S.best+') &nbsp; ✉️ '+cnt()+' thư mở &nbsp; ✍️ '+S.wrote+' thư gửi</p></div>'
+             +'<h3>Thành tích</h3>'+ACH.map(function(a){var on=S.ach[a[0]];return'<div class="ach'+(on?'':' off')+'"><span>'+(on?'🏅':'🔒')+'</span><span><b>'+a[1]+'</b><br>'+a[2]+'</span></div>'}).join("")
+             +'<h3>Bạn thư</h3><label for="mylink">Liên kết hồ sơ của bạn (gửi cho bạn bè để họ theo dõi)</label><input id="mylink" readonly value="'+esc(link())+'"><button class="b alt" data-a="cp2">Sao chép</button>'
+             +'<label for="fc">Dán liên kết hồ sơ của bạn bè</label><input id="fc"><button class="b" data-a="fol">Theo dõi</button>'
+             +S.fol.map(function(u,i){return card(u,'<button class="b alt" data-a="unf" data-i="'+i+'">Bỏ theo dõi</button>')}).join("");
+            go(h);
+          };
+          document.addEventListener("change",function(e){if(e.target.id==="nm"){S.name=e.target.value.trim().slice(0,20)||"Bạn";save()}});
+          A.av=function(i){S.av=i;save();A.prof()};
+          A.cp2=function(){$("mylink").select();try{navigator.clipboard.writeText($("mylink").value);toast("Đã sao chép")}catch(e){document.execCommand("copy")}};
+          function addFol(c){
+            var u;try{u=dec(c)}catch(e){}
+            if(!u||!u.n){toast("Liên kết không hợp lệ");return false}
+            if(S.fol.some(function(x){return x.k===c})){toast("Bạn đã theo dõi người này");return false}
+            u.k=c;S.fol.push(u);chk();toast("Đã theo dõi "+u.n);return true;
           }
-          window.addEventListener("hashchange",route);
-          route();
+          A.fol=function(){var s=$("fc").value.trim(),m=s.match(/#u=(.+)$/);if(addFol(m?m[1]:s))A.prof()};
+          A.folc=function(i){if(addFol(i))A.prof()};
+          A.unf=function(i){S.fol.splice(+i,1);save();A.prof()};
+          
+          document.addEventListener("click",function(e){var t=e.target.closest("[data-a]");if(t&&A[t.dataset.a])A[t.dataset.a](t.dataset.i)});
+          
+          (function(){
+            var m=location.hash.match(/^#([lu])=(.+)$/);
+            if(m){try{var o=dec(m[2]);
+              if(m[1]==="l"){o.k=hs(m[2]);openLetter(o);return}
+              go(card(o,'<button class="b" data-a="folc" data-i="'+esc(m[2])+'">Theo dõi</button><button class="b alt" data-a="inbox">Về hộp thư</button>'));return}catch(e){}}
+            A.inbox();
+          })();
           </script>
           </body>
           </html>
